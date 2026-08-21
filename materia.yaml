@@ -1,13 +1,13 @@
 schema_version: 1
 template_version: "0.1.0"
-configurada: false
+configurada: true
 
 materia:
-  nombre: "Nombre de la materia"
-  slug: "materia"
+  nombre: "Programación de Objetos Distribuidos"
+  slug: "programacion-de-objetos-distribuidos"
   institucion: ""
   carrera: ""
-  ciclo: ""
+  ciclo: "2026"
   idioma: "es"
 
 estudio:

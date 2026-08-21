@@ -1,5 +1,5 @@
 <!-- course-title:start -->
-# Course Wiki Template
+# Programación de Objetos Distribuidos
 <!-- course-title:end -->
 
 [English](README.en.md)
