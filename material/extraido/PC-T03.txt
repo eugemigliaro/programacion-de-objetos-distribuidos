@@ -1,0 +1,591 @@
+FUENTE: PC-T03
+TITULO: Programación concurrente III: alternativas a la sincronización
+ORIGINAL: material/catedra/teoria/Programación Concurrente - III.pdf
+PAGINAS: 43
+
+===== PAGINA 1 =====
+
+Programación Concurrente -
+III
+
+===== PAGINA 2 =====
+
+Alternativas a la sincronización
+
+===== PAGINA 3 =====
+
+                     Alternativas a la sincronización
+
+Al tratar de resolver los problemas indicados con anterioridad con sincronización y/o
+algunas de las otras estrategias vistas se pueden ocasionar otro tipos de problemas como
+sobre-sincronizar, bloquear threads y/o problemas de memoria.
+Existen estrategias alternativas que en algunos casos pueden ser preferibles ya que nos
+pueden evitar estos problemas.
+Las estrategias que vamos a ver son:
+ »   Objetos inmutables.
+ »   Coordinar mediante una comunicación vía pub/sub.
+ »   Hacer sub-procesamientos independientes.
+
+===== PAGINA 4 =====
+
+                          Objetos inmutables
+
+              Un objeto inmutable es aquel cuyo estado no cambia una
+                                vez que fue creado.
+
+
+Este tipo de objetos son seguros para aplicaciones concurrentes ya que no
+pueden ser corrompidos mediante la interferencia de Threads, ni tener problemas
+de consistencia.
+
+===== PAGINA 5 =====
+
+                               Objetos inmutables
+
+Para que un objeto sea inmutable se puede:
+ »   Asegurarse que todos los campos sean privados y ﬁnales (obviamente no proveer
+     setters).
+ »   Marcar los métodos con ﬁnal (o la clase) para evitar que subclases modiﬁquen las
+     implementaciones de los métodos.
+ »   Asegurarse de tener referencias a objetos mutables donde estos objetos no se
+     modiﬁquen en métodos de la clase ni se "escapen" para ser modiﬁcados fuera de la
+     clase.
+
+===== PAGINA 6 =====
+
+Ejercicio 1 - Objetos inmutables
+1. Bajar el archivo concurrency-iii.zip
+2. Correr el SubscriberTest y analizar el resultado
+3. Realizar los cambios necesarios a las clases para que Subscriber sea
+   inmutable.
+
+===== PAGINA 7 =====
+
+                        Objetos inmutables
+
+public class Subscriber {
+    private final Integer id;
+    private final Date dateOfBirth;
+    private final List<Subscription> subscriptions;
+
+
+    public Subscriber(Integer id, Date dateOfBirth) {
+        this.id = id;
+        this.dateOfBirth = new Date(dateOfBirth.getTime());
+    }
+
+
+    public Integer getId() {
+        return id;
+    }
+
+
+    public Date getDateOfBirth() {
+        return new Date(dateOfBirth.getTime());
+    }
+}
+
+===== PAGINA 8 =====
+
+   Objetos inmutables
+
+
+ Por supuesto, no todo problema se puede
+     resolver con objetos inmutables.
+Pero es buena práctica empezar haciendo los
+  objetos inmutables, y volverlos mutable a
+         medida que sea necesario.
+
+===== PAGINA 9 =====
+
+                                       Pub-Sub
+Una manera de coordinar entre Threads que uno dependa del trabajo de otro es armar
+una estrategia publisher/subscriber. La estrategia se basa en
+ »   Ambos Threads comparten una cola (por eso java.concurrent tiene tantas
+     opciones).
+ »   Cuando el publisher termina su tarea envía un mensaje mediante la cola.
+ »   El subscriber lee dicho mensaje de la cola e inicia su tarea.
+
+===== PAGINA 10 =====
+
+                                           Pub-Sub
+Esta estrategia permite:
+➢    Reducir la dependencia entre Threads.
+➢    De acuerdo a la cola utilizada el tiempo de IDLE del Thread se reduce al mínimo.
+➢    Se reduce el riesgo de errores al no usar notifyAll, o locks bloqueantes.
+
+===== PAGINA 11 =====
+
+                                    Pub-Sub - Queues
+
+De acuerdo a las necesidades el pub sub (y otras estrategías) pueden elegir entre las
+siguientes colas:
+➢    ArrayBlockingQueue: Se implementa sobre un array con tamaño ﬁjo.
+➢    LinkedBlockingQueue: Se implementa sobre un LinkedList sin límite.
+➢    PriorityBlockingQueue: No aplica FIFO sino que ordena por prioridad
+➢    DelayQueue: Los elementos de la lista salen de la misma luego de un delay que cada
+     uno responde
+➢    LinkedTransferQueue: El productor se bloquea al producir hasta que el consumidor
+     toma el elemento.
+➢    SynchronousQueue: Cola que solo acepta 1 elemento.
+➢    ConcurrentLinkedQueue: Cola thread safe con métodos no bloqueantes.
+
+===== PAGINA 12 =====
+
+                         Pub-Sub - Ejemplos
+A la hora de utilizar una estrategia pub/sub se requiere primero deﬁnir la cola
+para comunicarse
+
+
+      SynchronousQueue<Integer> queue = new SynchronousQueue<>();
+
+===== PAGINA 13 =====
+
+                          Pub-Sub - Ejemplos
+El productor realiza su tarea y se encarga de publicar en la cola el mensaje para
+el/los consumidores.
+
+
+    Runnable producer = () -> {
+         Integer producedElement = ThreadLocalRandom
+                  .current()
+                 .nextInt();
+         try {
+             queue.put( producedElement );
+         } catch (InterruptedException ex) {
+             ex.printStackTrace();
+         }
+    };
+
+===== PAGINA 14 =====
+
+                         Pub-Sub - Ejemplos
+El consumidor lee de la cola y ejecuta en consecuencia.
+
+
+
+     Runnable consumer = () -> {
+          try {
+              Integer consumedElement = queue.take();
+          …
+          } catch (InterruptedException ex) {
+              ex.printStackTrace();
+          }
+     };
+
+===== PAGINA 15 =====
+
+                       Pub-Sub - Ejemplos
+Ambos elementos son ejecutados usando Threads
+
+
+     ExecutorService executor = Executors.newFixedThreadPool(2);
+
+
+     executor.execute(producer);
+     executor.execute(consumer);
+
+===== PAGINA 16 =====
+
+            Pub-Sub
+
+
+Esta estrategia se porta a sistemas
+distribuidos donde es común utilizar
+     pub-sub como estrategia de
+ comunicación entre componentes
+              remotos.
+
+===== PAGINA 17 =====
+
+Ejercicio 2 - Pub Sub
+1. Analizar la ejecución de PubSubTest.
+2. Modiﬁcar el consumer para que imprima la suma de los números recibidos
+   al terminar su ejecución.
+
+===== PAGINA 18 =====
+
+                            Subdivisión de la Tarea
+Otra estrategia de realizar procesamientos de grandes datos de información es (de ser
+posible):
+➢   Particionar la información entre unidades de procesamientos (workers o threads).
+➢   Cada worker calcule un resultado parcial sobre su partición
+➢   Luego con los resultados de todas las particiones se calcula el resultado total.
+
+===== PAGINA 19 =====
+
+                              Subdivisión de la Tarea
+Esta estrategia también es deseable porque:
+➢ No hay riesgo de interferencia (cada partición es independiente del resto y debería ser
+  inmutable).
+➢ Se puede optimizar el procesamiento porque se procesa un subset de la data
+➢ Se puede reutilizar workers si las particiones son más que los workers.
+
+
+La principal contra es lograr describir la tarea para particionar la información.
+
+===== PAGINA 20 =====
+
+                             Subdivisión de la Tarea
+
+Como ejemplo de esta tarea podemos ver un algoritmo
+de ordenamiento como Mergesort.
+Cuyo algoritmo requiere particionar la data e ir
+ordenando dentro de las particiones. La tarea dentro
+de cada partición es independiente de las otras
+particiones.
+
+===== PAGINA 21 =====
+
+ Subdivisión de la Tarea
+
+
+ Esta es otra estrategia que se porta a
+    sistemas distribuidos ya que el
+particionamiento de datos es deseable
+   cuando tengo workers en nodos
+               diferentes.
+
+===== PAGINA 22 =====
+
+                             Subdivisión de la Tarea
+
+En Java 8 se incluye nativamente la posibilidad de paralelizar los Streams.
+Esto hace que el cálculo de las operaciones se realicen en Threads obtenidos mediante al
+ForkJoinPool.
+La división y generación de Threads la realiza la JMV. Esto trae sus riesgos porque al ser una
+solución genérica no siempre es la más óptima.
+
+
+         double average = roster
+                          .parallelStream()
+                          .filter(p -> p.getGender() == Person.Sex.MALE)
+                          .mapToInt(Person::getAge)
+                          .average()
+                          .getAsDouble();
+
+===== PAGINA 23 =====
+
+Ejercicio 3 - Parallel sort
+La idea es comparar una ejecución de ordenamiento paralela y otra secuencial.
+Para ello vamos a un test que:
+ » Genere 3 arrays de enteros con números aleatorios con diferentes tamaños
+   (10 M, 25M y 50M de números)
+ » Por cada array saque el promedio de tiempo de 4 ejecuciones de
+   ordenamiento para:
+    ● Arrays#parallelSort
+    ● Arrays#sort
+ » Imprima a salida estándar el resultado de cada una de las ejecuciones
+
+===== PAGINA 24 =====
+
+                               Ejercicio 3 Parallel sort
+
+En una corrida el resultado dio:
+ »   10M serial:          293 ms
+ »   10M parallel:         46 ms
+ »   25M serial:          652 ms
+ »   25M parallel:         79 ms
+ »   50M serial:        1320 ms
+ »   50M parallel:      151 ms
+
+
+
+Las ejecuciones concurrentes son mejores a medida que el número de valores
+crece.
+Existe la posibilidad de que para valores muy chicos el serial sea igual o hasta
+mejor que paralelo (probar con 10K números) ¿Por qué?
+
+===== PAGINA 25 =====
+
+                        Parallel Stream - Orden
+
+Al ejecutar una acción en paralelo la JVM decide cómo dividir la secuencia en partes
+buscando la manera más eﬁciente de dividir para la ejecución paralela.
+Internamente utiliza la clase Split Iterator.
+Al no estar garantizado el orden, además de los problemas de concurrencia, los
+lambdas que se pasan como operaciones no deben:
+➢ Tener side-effects: modiﬁcar valores de la clase que los contiene.
+➢ Ser stateful: guardar estado interno.
+
+===== PAGINA 26 =====
+
+Scheduled Future
+
+===== PAGINA 27 =====
+
+                      Scheduled Futures
+
+Los scheduled futures son futures que se corren de manera periódica o con algún delay
+(o ambos).
+La interfaz es la misma que Future más la incorporación de Delayed
+
+ public interface ScheduledFuture<V> extends Delayed, Future<V> {
+ }
+
+
+
+
+ public interface Delayed extends Comparable<Delayed> {
+     long getDelay(TimeUnit var1);
+ }
+
+===== PAGINA 28 =====
+
+                      Scheduled Futures
+
+Para instanciar un ScheduledFuture existe un executor service
+
+
+
+  final ScheduledExecutorService executorService =
+                          Executors.newSingleThreadScheduledExecutor();
+
+===== PAGINA 29 =====
+
+                      Scheduled Futures
+
+Y a partir del mismo se puede instanciar una tarea que se ejecute luego de un cierto
+delay
+
+
+  Future<String> resultFuture =
+           executorService.schedule(callableTask, 1, TimeUnit.SECONDS);
+
+
+                                                      Esta tarea se corre 1 vez luego de 1
+                                                               segundo de delay
+
+===== PAGINA 30 =====
+
+                      Scheduled Futures
+
+Para instanciar una tarea que se repite existen dos métodos
+
+
+ executorService.scheduleAtFixedRate(runnableTask, 100, 450,
+ TimeUnit.MILLISECONDS);
+                                                    Luego de 100 Ms corre una tarea cada
+                                                    450 Ms a menos que la tarea tarde más
+
+
+
+
+executorService.scheduleWithFixedDelay(task, 100, 150,
+TimeUnit.MILLISECONDS);
+
+                                                      Luego de 100 Ms corre una tarea y se
+                                                      repite 150 Ms después de que la tarea
+                                                                   termine.
+
+
+          En ambos casos las tareas terminan al ﬁnalizar el ExecutorService
+                                  o se la cancele
+
+===== PAGINA 31 =====
+
+Ejercicio 4 - Scheduled
+1. Implementar ScheduledTest
+2. El mismo debe correr una tarea que corra cada 10 segundos e imprima el
+   timestamp del momento.
+3. Además debe ejecutar una segunda tarea con un delay de 60 segundos que
+   cancele la primera tarea
+
+===== PAGINA 32 =====
+
+Completable Future
+
+===== PAGINA 33 =====
+
+                     Completable Futures
+
+Representan un Future que puede ser completado programáticamente y puede ser
+encadenado y combinado con otros CompletableFutures debido a que implementa la
+interfaz CompletionStage.
+Construcción:
+➢ A pesar de que existe un constructor default para poder crear un objeto y luego
+    completarlo:
+
+     CompletableFuture<String> cf       = new CompletableFuture<>();
+
+     //completar el future
+     cf.complete("resultado correcto");
+
+     //o si quiero tirar error
+     cf.completeExceptionally(new IllegalArgumentException("este
+     future no termino bien"));
+
+===== PAGINA 34 =====
+
+                    Completable Futures
+
+➢   Existen métodos estáticos de construcción de acuerdo al tipo de acción que se
+    quiere pasarle.
+
+    //tarea ya terminada y con respuesta
+           CompletableFuture.completedFuture("resultado");
+
+    //tarea como runnable
+           CompletableFuture.runAsync(() ->
+                          System.out.println("tarea"));
+
+    //tarea como un supplier (similar a Callable)
+     CompletableFuture.supplyAsync(() -> "resultado");
+
+
+
+                    run y supply utilizan el forkJoinPool a menos que se use
+                    las versiones que reciben un ExecutorService.
+
+===== PAGINA 35 =====
+
+                       Completable Futures - Chaining
+
+Se puede obtener un CompletableFuture que es el encadenamiento entre un
+CompletableFuture y una acción que corre después de que ﬁnalizó el CompletableFuture.
+
+Donde la acción puede ser:
+    Un runnable que corre sin importar la respuesta del Future inicial.
+      CompletableFuture<Void> thenRun = cf.thenRun(() ->
+      System.out.println("tarea"));
+
+
+
+    Un consumer que utiliza la respuesta del mismo.
+
+      CompletableFuture<Void> thenAccept = cf.thenAccept(response ->
+      System.out.println(response));
+
+===== PAGINA 36 =====
+
+                      Completable Futures - Chaining
+
+ Una función que transforma la respuesta del primero en otro valor.
+
+    CompletableFuture<String> thenApply =
+            cf.thenApply(response -> response.toLowerCase());
+
+ Una función que transforma la respuesta del primero en un CompletableFuture.
+
+    CompletableFuture<String> thenCompose =
+    cf.thenCompose(response ->
+                CompletableFuture.completedFuture(
+                                 response.toLowerCase()));
+
+
+
+
+Estas versiones corren en el mismo thread pero existen variantes *Async para
+correr en threads diferentes usando ForkJoinPool o un ExecutorService
+
+===== PAGINA 37 =====
+
+                      Completable Futures - On Error
+
+Al encadenar puede que alguna de las acciones termine con un error, es decir, arroja una
+excepción. Para estos casos se puede encadenar un manejo de dicho caso.
+Se puede manejar solamente la excepción mediante una función que transforme la
+excepción en un valor.
+
+
+
+CompletableFuture<String> exceptionally =
+                   cf.exceptionally(th -> th.getMessage());
+
+===== PAGINA 38 =====
+
+                      Completable Futures - On Error
+
+O una función que consume tanto el caso ok como el caso de error (pero lo deja para
+futuros encadenamientos).
+
+
+   CompletableFuture<String> whenComplete = cf.whenComplete((r, e) -> {
+      if (r != null) {
+           System.out.println(r);                         Sólo uno tiene
+       } else if (e != null) {                                valor !
+           System.out.println(e.getMessage());
+       } else {
+           System.out.println("don't know what happened");
+       }
+   });
+
+===== PAGINA 39 =====
+
+                     Completable Futures - Combine
+
+Se puede encadenar un CompletableFuture a la ejecución de más de un
+CompletableFuture
+➢   Se puede combinar dos ejecuciones para aplicar una función al resultado de las
+    dos:
+
+ExecutorService service = Executors.newCachedThreadPool();
+
+CompletableFuture<String> nameTask =
+       CompletableFuture.supplyAsync(() -> "name", service);
+CompletableFuture<String> subscriptorsTask =
+       CompletableFuture.supplyAsync(()-> "2000", service);
+
+CompletableFuture<String> combined =
+nameTask.thenCombineAsync(subscriptorsTask, (f, s) -> f + " with: " + s,
+service);
+
+===== PAGINA 40 =====
+
+                         Completable Futures - Combine
+
+O aplicar una función al resultado de la primera ejecución que termine:
+
+
+   CompletableFuture<String> nameTask =
+          CompletableFuture.supplyAsync(() -> "name");
+
+   CompletableFuture<String> username =
+          CompletableFuture.supplyAsync(() -> "username");
+
+   CompletableFuture<String> either =
+          nameTask.applyToEither(username, (r) -> "obtained: " + r);
+
+===== PAGINA 41 =====
+
+Para ﬁnalizar
+➢   Además de las estructuras vistas en la clase anterior existen otras
+    estrategías para solventar problemas de Thread Safety como el manejo de
+    objetos inmutables, pub/sub y subdivisión de tareas.
+➢   Varias de estas estrategias las volveremos a ver al pasar a programación
+    distribuida.
+➢   También se pueden utilizar ejecuciones más especíﬁcas cuando las tareas
+    tengan características especiales como la necesidad de subdividir la tarea, o
+    correrlas periódicamente
+
+===== PAGINA 42 =====
+
+                   Referencias y para profundizar
+
+»   https://docs.oracle.com/javase/tutorial/essential/concurrency/index.html
+»   Concurrent Programming in Java: Design Principles and Pattern (2nd Edition) by
+    Doug Lea. A comprehensive work by a leading expert, who's also the architect of
+    the Java platform's concurrency framework.
+»   Java Concurrency in Practice by Brian Goetz, Tim Peierls, Joshua Bloch, Joseph
+    Bowbeer, David Holmes, and Doug Lea. A practical guide designed to be accessible
+    to the novice.
+»   Effective Java Programming Language Guide (2nd Edition) by Joshua Bloch.
+    Though this is a general programming guide, its chapter on threads contains
+    essential "best practices" for concurrent programming.
+
+===== PAGINA 43 =====
+
+CREDITS
+Content of the slides:
+ »   POD - ITBA
+Images:
+ »   POD - ITBA
+ »   Or obtained from: commons.wikimedia.org
+
+
+Slides theme credit:
+Special thanks to all the people who made and released these awesome
+resources for free:
+ »   Presentation template by SlidesCarnival
+ »   Photographs by Unsplash
+

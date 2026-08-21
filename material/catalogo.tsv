@@ -1,1 +1,10 @@
 id	tipo	titulo	ruta	paginas	ciclo	estado	archivo_original
+PC-T01	teoria	Programación concurrente: threads	material/catedra/teoria/Programación Concurrente - Threads.pdf	47	2026	vigente	Programación Concurrente - Threads.pdf
+PC-P01	practica	Trabajo práctico: programación concurrente y threads	material/catedra/practica/TP- Programacion Concurrente - Threads.pdf	5	2026	vigente	TP- Programacion Concurrente - Threads.pdf
+PC-C01	codigo-apoyo	Proyecto de apoyo: concurrencia y threads	material/catedra/practica/concurrency.zip		2026	vigente	concurrency.zip
+PC-T02	teoria	Programación concurrente: thread safety	material/catedra/teoria/Programación Concurrente - Thread Safety.pdf	35	2026	vigente	Programación Concurrente - Thread Safety.pdf
+PC-P02	practica	Trabajo práctico: thread safety	material/catedra/practica/TP- Programacion Concurrente - Thread Safety.pdf	4	2026	vigente	TP- Programacion Concurrente - Thread Safety.pdf
+PC-C02	codigo-apoyo	Proyecto de apoyo: thread safety	material/catedra/practica/thread-safety.zip		2026	vigente	thread-safety.zip
+PC-T03	teoria	Programación concurrente III: alternativas a la sincronización	material/catedra/teoria/Programación Concurrente - III.pdf	43	2026	vigente	Programación Concurrente - III.pdf
+PC-P03	practica	Trabajo práctico: alternativas a la sincronización	material/catedra/practica/TP- Programacion Concurrente - Alternatives.pdf	2	2026	vigente	TP- Programacion Concurrente - Alternatives.pdf
+PC-C03	codigo-apoyo	Proyecto de apoyo: alternativas a la sincronización	material/catedra/practica/concurrency-iii.zip		2026	vigente	concurrency-iii.zip
