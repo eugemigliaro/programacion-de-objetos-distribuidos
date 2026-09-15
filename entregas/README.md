@@ -102,6 +102,33 @@ así que conviene que cada uno commitee lo suyo.
 El servicio 5 depende de que los otros publiquen sus eventos, así que conviene
 arrancarlo en paralelo y no al final.
 
+### Puntos de contacto entre servicios
+
+Los cinco servicios son paralelizables: la base común está hecha y cada uno suma
+su `.proto`, su clase de negocio, su servant y su cliente en archivos propios.
+Quedan tres lugares donde dos personas se tocan.
+
+**`AllBagsInPlane` (servicios 2 y 4) — ya resuelto.** La condición se vuelve
+cierta tanto al finalizar el bag-drop como al descargar el último equipaje, y los
+dos caminos son reales porque finalizar el bag-drop no exige que los carts estén
+vacíos. Está concentrado en `FlightCompletionNotifier`: los dos servicios lo
+invocan después de su cambio de estado y fuera de la sección crítica. **No
+reimplementar la condición.**
+
+**Ciclo de vida de la estación (servicios 2 y 3).** El 2 hace `turnOn`/`turnOff`;
+el 3 hace `occupy`/`release` durante la sesión de despacho y publica en el stream
+que abrió el 2. La máquina de estados ya está en `Station` con sus transiciones
+CAS: leerla antes de arrancar, no agregarle un lock.
+
+**Ruteo de un equipaje aceptado (servicio 3).** Un equipaje va al pier si el vuelo
+tiene uno, y si no al baggage room del vuelo. Es el inverso exacto de lo que hace
+`BagAdminService.setPier` al drenarlo, así que conviene leer ese método antes de
+escribir el despacho.
+
+El riesgo real del paralelismo no es el merge, es que nadie corra el flujo
+completo hasta tarde. Conviene reservar el último tramo para integración contra
+los ejemplos de consola del PDF.
+
 ### Antes de escribir código
 
 Leer `doc/decisiones-de-diseno.md` dentro del repo del TP. Tiene el criterio de
