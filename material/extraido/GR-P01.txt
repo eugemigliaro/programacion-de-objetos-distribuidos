@@ -1,0 +1,86 @@
+FUENTE: GR-P01
+TITULO: Trabajo práctico: gRPC Communication Patterns
+ORIGINAL: material/catedra/practica/TP - gRPC - Communication Patterns.pdf
+PAGINAS: 2
+
+===== PAGINA 1 =====
+
+Programación Objetos Distribuidos - TP gRPC - Communication Patterns
+
+
+
+               Programación de Objetos Distribuidos
+                         Trabajo Práctico
+                  gRPC - Communication Patterns
+
+Ejercicio 1
+​       Indicar los errores y/o mejoras que aplican en los siguientes fragmentos de definiciones de
+servicios .proto:
+
+1.1
+
+ message SearchRequest {
+  string query = 0;
+  uint32 page_number = 1;
+  uint32 result_per_page = 2;
+ }
+
+
+1.2
+
+ message DoubleMessage {
+  double value = 1;
+ }
+
+ service CalculatorService {
+  rpc Add(DoubleMessage, DoubleMessage) returns (DoubleResponse);
+  rpc Substract(DoubleMessage, DoubleMessage) returns (DoubleResponse);
+  rpc Random() returns (DoubleMessage);
+ }
+
+
+1.3
+
+ service FlightService {
+  rpc FlightStatus(FlightStatusRequest) returns (FlightStatusResponse);
+ }
+
+ message FlightStatusRequest {
+  string flight_code = 1;
+ }
+
+ enum FlightStatus {
+  ON_TIME = 0;
+  DELAYED = 1;
+  CANCELLED = 2;
+ }
+
+ message FlightStatusResponse {
+  FlightStatus flight_status = 1;
+
+===== PAGINA 2 =====
+
+Programación Objetos Distribuidos - TP gRPC - Communication Patterns
+
+
+
+}
+
+
+
+Ejercicio 2
+      Se desea ofrecer un servicio gRPC que cuente los siguientes métodos:
+         ○​ ping: operación sin parámetros que contesta inmediatamente con la cadena:
+            “pong”
+         ○​ time: operación sin parámetros que retorna la hora del servidor.
+         ○​ echo: operación que recibe una cadena e inmediatamente la retorna.
+         ○​ hello: operación que recibe una cadena (pensando que es un nombre) y retorna el
+            texto “hello <nombre>”.
+         ○​ fortune: operación sin parámetros que retorna una cadena de texto,
+            seleccionando la misma aleatoriamente de una lista de textos que está en memoria
+            en el Servant (los textos que son frases tipo fortune cookies).
+
+      Para ello se pide implementar el contrato del servicio en un archivo .proto, un Servant que
+      responda a los métodos del servicio y un Client que consuma el servicio publicado
+      utilizando un stub bloqueante.
+

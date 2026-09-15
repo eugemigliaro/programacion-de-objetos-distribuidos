@@ -8,3 +8,11 @@ PC-C02	codigo-apoyo	Proyecto de apoyo: thread safety	material/catedra/practica/t
 PC-T03	teoria	Programación concurrente III: alternativas a la sincronización	material/catedra/teoria/Programación Concurrente - III.pdf	43	2026	vigente	Programación Concurrente - III.pdf
 PC-P03	practica	Trabajo práctico: alternativas a la sincronización	material/catedra/practica/TP- Programacion Concurrente - Alternatives.pdf	2	2026	vigente	TP- Programacion Concurrente - Alternatives.pdf
 PC-C03	codigo-apoyo	Proyecto de apoyo: alternativas a la sincronización	material/catedra/practica/concurrency-iii.zip		2026	vigente	concurrency-iii.zip
+GR-T01	teoria	Introducción a gRPC	material/catedra/teoria/Introducción a gRPC.pdf	58	2026	vigente	Introducción a gRPC.pdf
+GR-T02	teoria	gRPC: patrones de comunicación	material/catedra/teoria/gRPC Communication Patterns.pdf	36	2026	vigente	gRPC Communication Patterns.pdf
+GR-T03	teoria	gRPC: streaming	material/catedra/teoria/gRPC Streaming.pdf	44	2026	vigente	gRPC Streaming.pdf
+GR-P01	practica	Trabajo práctico: gRPC Communication Patterns	material/catedra/practica/TP - gRPC - Communication Patterns.pdf	2	2026	vigente	TP - gRPC - Communication Patterns.pdf
+GR-S01	solucion	Solución del trabajo práctico: gRPC Communication Patterns	material/catedra/practica/Solución TP gRPC - Communication Patterns.pdf	5	2026	vigente	Solución TP gRPC - Communication Patterns.pdf
+GR-P02	practica	Trabajo práctico: gRPC III	material/catedra/practica/TP - gRPC - III.pdf	5	2026	vigente	TP - gRPC - III.pdf
+GR-E01	entrega	Trabajo Práctico Especial 1: Gestión de Equipajes en Aeropuertos	material/catedra/practica/TPE1.pdf	29	2026	vigente	TPE1.pdf
+GR-R01	referencias	Repositorios provistos por la cátedra para gRPC	material/catedra/referencias/links_provistos_por_la_cátedra.md		2026	vigente	links_provistos_por_la_cátedra.md

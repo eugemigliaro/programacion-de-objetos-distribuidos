@@ -25,3 +25,22 @@ Definiciones breves de la primera unidad. Los enlaces llevan al apunte temático
 - **Thread pool:** conjunto de threads reutilizables a los que se asignan nuevas tareas, evitando recrearlos en cada operación. [PC-T01, p. 39]
 - **Time slice:** intervalo de CPU que el sistema operativo reparte entre procesos o threads mediante cambios de contexto. [PC-T01, p. 12]
 - **Volátil (`volatile`):** campo cuyas lecturas y escrituras son atómicas y cuya escritura establece visibilidad para lecturas posteriores del mismo campo; no vuelve atómicas las operaciones compuestas. [PC-T02, p. 14] [PC-T02, p. 15]
+
+## Sistemas distribuidos y gRPC
+
+- **Cliente:** proceso que solicita la ejecución de una operación ofrecida por un servicio remoto. [GR-T01, p. 10]
+- **Deadline:** límite hasta el cual un cliente está dispuesto a esperar una respuesta RPC. [GR-T02, p. 15]
+- **IDL:** lenguaje de definición de interfaces; describe contratos remotos con independencia de la implementación. Protocol Buffers cumple este rol en gRPC. [GR-T01, p. 14] [GR-T01, p. 33]
+- **Interceptor:** componente que envuelve llamadas gRPC para agregar funciones transversales como métricas, logs, autenticación, autorización o manejo de errores. [GR-T03, p. 33] [GR-T03, p. 34]
+- **Middleware:** capa que abstrae de la aplicación los detalles necesarios para comunicarse por la red. [GR-T01, p. 23]
+- **Protocol Buffers:** IDL y formato binario tipado de serialización usado por gRPC. [GR-T01, p. 32] [GR-T01, p. 33] [GR-T01, p. 34]
+- **RPC:** modelo que traduce una invocación a un método y sus parámetros a mensajes de red para ejecutar una operación remota. [GR-T01, p. 25] [GR-T01, p. 26]
+- **RPC unario:** método que recibe un request y devuelve un response. [GR-T03, p. 5]
+- **Server streaming:** método que recibe un request y devuelve varios mensajes de respuesta. [GR-T03, p. 11]
+- **Client streaming:** método que recibe varios mensajes de request y devuelve un response. [GR-T03, p. 16]
+- **Streaming bidireccional:** método donde cliente y servidor envían varios mensajes durante la misma comunicación. [GR-T03, p. 21]
+- **Servicio:** componente que administra recursos y ofrece un conjunto acotado de operaciones mediante una API. [GR-T01, p. 9]
+- **Servant:** implementación de la lógica remota en el servidor; en Spring gRPC extiende la clase base generada para el servicio. [GR-T01, p. 37] [GR-T01, p. 51]
+- **Skeleton:** middleware servidor que interpreta el pedido, deserializa sus parámetros e invoca al servant. [GR-T01, p. 29] [GR-T01, p. 37]
+- **StreamObserver:** interfaz de callbacks que entrega valores con `onNext` y finaliza con `onCompleted` o `onError`. [GR-T01, p. 53]
+- **Stub:** proxy cliente generado para invocar el servicio remoto. [GR-T01, p. 28] [GR-T01, p. 40]
