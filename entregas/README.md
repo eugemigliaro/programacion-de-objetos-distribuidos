@@ -76,12 +76,22 @@ consola, que son contrato.
 | Mapper de errores | listo |
 | Andamiaje de clientes y 5 scripts | listo |
 | **1. Administración** (`bagAdmin.sh`) | **listo, es la referencia** |
-| 2. Gestión de vuelos (`flightManagement.sh`) | pendiente |
-| 3. Despacho (`bagDrop.sh`) | pendiente |
-| 4. Rampa (`ramp.sh`) | pendiente |
-| 5. Seguimiento (`track.sh`) | pendiente |
-| README de la entrega | parcial |
+| 2. Gestión de vuelos (`flightManagement.sh`) | listo, en `main` |
+| 3. Despacho (`bagDrop.sh`) | **pendiente** — `feat/service-3` solo tiene un `plan.md` |
+| 4. Rampa (`ramp.sh`) | listo, en `main` |
+| 5. Seguimiento (`track.sh`) | listo en la rama `servicio-5-seguimiento`, sin mergear |
+| README de la entrega | parcial — faltan las secciones 3 y 4 |
 | `doc/Informe.pdf` | pendiente |
+
+Pendientes que dejó el servicio 5 para los demás:
+
+- **Despacho:** publicar el evento de cada equipaje aceptado dentro del lock
+  del vuelo, antes de soltarlo. Es la regla de "Orden de los eventos del
+  seguimiento" en `doc/decisiones-de-diseno.md`.
+- **`turnOnStation`:** con Ctrl+C el cliente queda vivo 30 s por el periodo de
+  gracia del canal. `TrackingClient` muestra cómo evitarlo.
+- **`plan.md` de `feat/service-3`:** cita material de la wiki (`[GR-E01, p. N]`)
+  y no puede llegar así al repo que se entrega.
 
 Alcance: el grupo es de menos de 5 integrantes, así que **no** entran las
 secciones 5.4 (`pendingBags`), 5.5 (`dashboard`) ni 5.6 (`cartBags`).
@@ -94,10 +104,10 @@ así que conviene que cada uno commitee lo suyo.
 
 | Servicio | Dificultad | Responsable |
 |---|---|---|
-| 2. Gestión de vuelos | alta — incluye el stream de `turnOnStation` | a definir |
-| 3. Despacho | alta — sesión bidireccional y exclusión de la estación | a definir |
-| 4. Rampa | media — traslados todo-o-nada | a definir |
-| 5. Seguimiento | alta — eventos de los otros cuatro servicios | a definir |
+| 2. Gestión de vuelos | alta — incluye el stream de `turnOnStation` | Franco |
+| 3. Despacho | alta — sesión bidireccional y exclusión de la estación | Pablo |
+| 4. Rampa | media — traslados todo-o-nada | Andrés |
+| 5. Seguimiento | alta — eventos de los otros cuatro servicios | Eugenio |
 
 El servicio 5 depende de que los otros publiquen sus eventos, así que conviene
 arrancarlo en paralelo y no al final.
