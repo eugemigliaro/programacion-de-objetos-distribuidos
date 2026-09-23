@@ -14,7 +14,8 @@ que **su contenido no debe citar ni referenciar material de este repositorio**.
 
 - **Repositorio:** `eugemigliaro/tpe1-26Q2-g05` (privado, creado desde el
   template de la cátedra `POD-ITBA/tpe1-26Q2-g0`)
-- **Integrantes:** Eugenio Migliaro, Andrés Garbarz, Franco Branda
+- **Integrantes:** Eugenio Migliaro, Andrés Garbarz, Franco Branda, Pablo
+  Gorostiaga
 - **Entrega:** jueves 24/09 23:59 · **Coloquio:** miércoles 30/09
 
 ### Cómo replicar el entorno
