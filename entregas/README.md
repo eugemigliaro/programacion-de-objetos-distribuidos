@@ -67,6 +67,10 @@ consola, que son contrato.
 
 ### Estado
 
+Al 23/09: los cinco servicios están mergeados en `main`, el build compila, los
+163 tests pasan y el flujo completo con los scripts empaquetados coincide con
+los ejemplos de consola del PDF.
+
 | Capa | Estado |
 |---|---|
 | `api` — 6 protos, 5 servicios | listo |
@@ -77,21 +81,25 @@ consola, que son contrato.
 | Andamiaje de clientes y 5 scripts | listo |
 | **1. Administración** (`bagAdmin.sh`) | **listo, es la referencia** |
 | 2. Gestión de vuelos (`flightManagement.sh`) | listo, en `main` |
-| 3. Despacho (`bagDrop.sh`) | **pendiente** — `feat/service-3` solo tiene un `plan.md` |
+| 3. Despacho (`bagDrop.sh`) | listo, en `main` |
 | 4. Rampa (`ramp.sh`) | listo, en `main` |
-| 5. Seguimiento (`track.sh`) | listo en la rama `servicio-5-seguimiento`, sin mergear |
-| README de la entrega | parcial — faltan las secciones 3 y 4 |
-| `doc/Informe.pdf` | pendiente |
+| 5. Seguimiento (`track.sh`) | listo, en `main` |
+| README de la entrega | completo, en `main` |
+| Ctrl+C en `turnOnStation` y `bagDrop` | resuelto, en `main` |
+| Citas a la wiki en el TP | no quedan: se borró `doc/etapas-3-y-4-gestion-vuelos.md`, subido por error |
+| `doc/Informe.pdf` | pendiente — se redacta por fuera y se agrega como PDF |
 
-Pendientes que dejó el servicio 5 para los demás:
+Antes de subir el comprimido al Campus:
 
-- **Despacho:** publicar el evento de cada equipaje aceptado dentro del lock
-  del vuelo, antes de soltarlo. Es la regla de "Orden de los eventos del
-  seguimiento" en `doc/decisiones-de-diseno.md`.
-- **`turnOnStation`:** con Ctrl+C el cliente queda vivo 30 s por el periodo de
-  gracia del canal. `TrackingClient` muestra cómo evitarlo.
-- **`plan.md` de `feat/service-3`:** cita material de la wiki (`[GR-E01, p. N]`)
-  y no puede llegar así al repo que se entrega.
+- Agregar `doc/Informe.pdf` con carátula que liste a todos los integrantes.
+- Correr `./mvnw clean`: no se entregan binarios.
+- Incluir `.git/`. La descarga desde GitHub no lo trae, así que conviene
+  comprimir un `git clone` limpio al que se le agrega solo lo que falte.
+
+El historial todavía conserva citas `[GR-E01, p. N]` en commits viejos (el
+`plan.md` del servicio 3 y `doc/etapas-3-y-4-gestion-vuelos.md`, ambos ya
+borrados). El árbol final está limpio, y no se reescribió el historial
+compartido.
 
 Alcance: el grupo es de menos de 5 integrantes, así que **no** entran las
 secciones 5.4 (`pendingBags`), 5.5 (`dashboard`) ni 5.6 (`cartBags`).
