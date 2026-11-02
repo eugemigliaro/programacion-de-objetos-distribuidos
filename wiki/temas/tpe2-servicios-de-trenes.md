@@ -15,11 +15,11 @@ Cada país tiene dos archivos con encabezado y campos separados por `;`. En el d
 | Archivo | Registros según la consigna | Copia en este repositorio |
 |---|---|---|
 | `trainsCH.csv` | 42.782.820 (año 2024) | ZIP local sin versionar; ver [Datos locales](#datos-locales) |
-| `stationsCH.csv` | 1539 | `stationsCH(in).csv`, con coordenadas dañadas [HZ-D01] |
+| `stationsCH.csv` | 1539 | `stationsCH.csv` [HZ-D03]; reemplaza a una copia dañada [HZ-D01] |
 | `trainsBE.csv` | 20.809.934 (año 2024) | ZIP local sin versionar; ver [Datos locales](#datos-locales) |
 | `stationsBE.csv` | 538 | `stationsBE(in).csv` [HZ-D02] |
 
-Fuente de las cantidades: [HZ-E01]. Las dos copias de estaciones tienen la cantidad de filas esperada. [HZ-D01] [HZ-D02]
+Fuente de las cantidades: [HZ-E01]. Las dos copias de estaciones tienen la cantidad de filas esperada. [HZ-D03] [HZ-D02]
 
 ### Equivalencia de campos de servicios
 
@@ -48,15 +48,15 @@ Fuente: [HZ-E01]. Las demoras están en segundos y una demora negativa indica un
 | Área geográfica | `canton` | `Area`, con formato `id-nombre`; el área es siempre el nombre, nunca el identificador |
 | Coordenadas | `latitud` y `longitud`, en dos columnas | `Geo Point`, con latitud y longitud separadas por `", "` |
 
-Fuente: [HZ-E01]. En la copia belga hay cinco áreas: Brussel/Bruxelles, Antwerpen, Gent, Liège y Charleroi. [HZ-D02] La copia suiza tiene 26 cantones; Bern, Vaud y Zürich son los que más estaciones tienen. [HZ-D01]
+Fuente: [HZ-E01]. En la copia belga hay cinco áreas: Brussel/Bruxelles, Antwerpen, Gent, Liège y Charleroi. [HZ-D02] La copia suiza tiene 26 cantones; Bern, Vaud y Zürich son los que más estaciones tienen. [HZ-D03]
 
-### Coordenadas dañadas en la copia de `stationsCH`
+### Copias de estaciones y planillas de cálculo
 
-En las 1539 filas de la copia suiza, la latitud y la longitud perdieron el punto decimal y ganaron separadores de miles. Por ejemplo, Zürich HB figura como `4.737.817.667.422;85.402.123.491`, mientras que la consigna usa (47.37817667422, 8.5402123491) para la misma estación. [HZ-D01] [HZ-E01] Lo mismo pasa con las tres filas de ejemplo de la consigna: Zufikon Hammergut, Interlaken West y Wetzikon ZH. [HZ-D01] [HZ-E01] Con estos valores, la lectura como `double` falla o da coordenadas absurdas, y las queries 4 y 6 no se pueden resolver.
+La primera copia suiza, `stationsCH(in).csv`, llegó con las coordenadas dañadas en las 1539 filas: perdieron el punto decimal y ganaron separadores de miles, de modo que Zürich HB figuraba como `4.737.817.667.422;85.402.123.491`. [HZ-D01] La copia que se descargó después directamente desde SharePoint, sin abrirla en una planilla, tiene las coordenadas de la consigna, como (47.37817667422, 8.5402123491) para Zürich HB. [HZ-D03] [HZ-E01] Las dos copias tienen las mismas filas, en el mismo orden y con los mismos dígitos. Lo único que cambia es el formato numérico y el fin de línea: CRLF en la copia dañada y LF en la sana. Por lo tanto, el daño vino del camino de descarga y no del archivo de la cátedra. [HZ-D01] [HZ-D03]
 
-> **Inferencia:** es lo que sucede cuando una planilla de cálculo con configuración regional en español abre el CSV y lo vuelve a exportar. Los dos archivos de estaciones terminan sus líneas en CRLF, a diferencia de los de servicios, lo que apoya esa hipótesis. La copia belga se salvó porque `Geo Point` es un campo de texto. [HZ-D01] [HZ-D02]
+La copia belga, `stationsBE(in).csv`, llegó por el mismo camino: tiene el sufijo `(in)` y líneas CRLF. Sus coordenadas están intactas porque `Geo Point` es un campo de texto. [HZ-D02] Para confirmar que no cambió nada más hay que volver a descargarla directamente; el caso está registrado en [Dudas y conflictos](../dudas-y-conflictos.md).
 
-Hasta que haya una copia sana, no hay que usar `stationsCH(in).csv` para validar las queries 4 y 6. El problema está registrado en [Dudas y conflictos](../dudas-y-conflictos.md).
+> **Para probar:** usar `HZ-D03` y no `HZ-D01`, y no abrir los CSV en una planilla antes de dárselos a la aplicación.
 
 ## Invocación y archivos de salida
 
@@ -233,4 +233,4 @@ Fuente: [HZ-E01]. No se aceptan entregas fuera de término, y las dudas van a lo
 
 ## Datos locales
 
-Los ZIP de servicios no están versionados: pesan 428 MB (Bélgica) y 1,08 GB (Suiza), más de lo que GitHub acepta por archivo, y la consigna prohíbe incluirlos en la entrega. Se guardan en `laboratorio/tpe2/data/`, que git ignora. En `laboratorio/tpe2/README.md` están sus checksums, cómo armar un directorio de entrada con los nombres exactos que espera `-DinPath` y qué hacer con la copia suiza de estaciones.
+Los ZIP de servicios no están versionados: pesan 428 MB (Bélgica) y 1,08 GB (Suiza), más de lo que GitHub acepta por archivo, y la consigna prohíbe incluirlos en la entrega. Se guardan en `laboratorio/tpe2/data/`, que git ignora. En `laboratorio/tpe2/README.md` están sus checksums, cómo armar un directorio de entrada con los nombres exactos que espera `-DinPath` y con los archivos de estaciones.

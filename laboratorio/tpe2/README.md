@@ -8,7 +8,7 @@
 - Se pueden volver a descargar desde los enlaces de la cátedra que figuran en la consigna (`material/catedra/practica/TPE2 Servicios de Trenes.md`, sección "Descripción Funcional").
 - La consigna prohíbe incluir los CSV de la cátedra en la entrega, así que tampoco tienen que terminar en el repositorio del TP.
 
-Los CSV de estaciones sí se versionan, porque son chicos, como fuentes `HZ-D01` y `HZ-D02` en `material/catedra/practica/`.
+Los CSV de estaciones sí se versionan, porque son chicos, en `material/catedra/practica/`: `stationsCH.csv` (`HZ-D03`) y `stationsBE(in).csv` (`HZ-D02`).
 
 ## Archivos esperados
 
@@ -35,13 +35,13 @@ cd laboratorio/tpe2/data
 unzip -o trainsBE.csv.zip trainsBE.csv
 unzip -o trainsCH.csv.zip trainsCH.csv
 cp "../../../material/catedra/practica/stationsBE(in).csv" stationsBE.csv
-# stationsCH.csv: ver la advertencia de abajo
+cp ../../../material/catedra/practica/stationsCH.csv stationsCH.csv
 ```
 
 Después, cada query se corre con `-DinPath="$PWD"` (o con la ruta absoluta de este directorio).
 
-## Advertencia: `stationsCH`
+## Estaciones: no pasar por una planilla
 
-La copia catalogada como `HZ-D01` tiene las coordenadas dañadas: los números perdieron el punto decimal y tienen separadores de miles (`4.737.817.667.422` en lugar de `47.37817667422`). Sirve para las queries que no usan coordenadas, pero no para las queries 4 y 6.
+`stationsCH(in).csv` (`HZ-D01`) llegó, probablemente después de pasar por una planilla, con las coordenadas dañadas: perdieron el punto decimal y ganaron separadores de miles (`4.737.817.667.422` en lugar de `47.37817667422`). No hay que usarlo. `stationsCH.csv` (`HZ-D03`) es la misma tabla descargada directamente con la opción "Descargar" de SharePoint, y tiene las coordenadas correctas.
 
-Conviene volver a descargar `stationsCH.csv` con la opción "Descargar" de SharePoint, sin abrirlo en una planilla de cálculo. La copia sana debería tener las coordenadas de los ejemplos de la consigna, como `8502188;Zufikon Hammergut;Aargau;47.35595499022;8.35458862375`. Si la descarga vuelve a llegar dañada, hay que consultar en los Debates del Campus. El seguimiento está en `wiki/dudas-y-conflictos.md`.
+`stationsBE(in).csv` llegó por el mismo camino, pero sus coordenadas están intactas porque `Geo Point` es texto. Si se vuelve a descargar directamente, conviene compararla con la versionada. El seguimiento está en `wiki/dudas-y-conflictos.md`.

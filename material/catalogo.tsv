@@ -30,6 +30,7 @@ API-T01	teoria	APIs alternativas 1: tira de bytes, SOAP y REST	material/catedra/
 API-T02	teoria	APIs alternativas 2: GraphQL y APIs de eventos	material/catedra/teoria/API - Alternativas 2.pdf	35	2026	vigente	API - Alternativas 2.pdf
 API-C01	codigo-apoyo	Proyecto de apoyo: graphql-intro	material/catedra/practica/graphql-intro.zip		2026	vigente	graphql-intro.zip
 HZ-E01	entrega	Trabajo Práctico Especial 2: Servicios de Trenes	material/catedra/practica/TPE2 Servicios de Trenes.md		2026	vigente	TPE2 Servicios de Trenes.md
-HZ-D01	dataset	Dataset del TPE2: estaciones de Suiza (stationsCH)	material/catedra/practica/stationsCH(in).csv		2026	dudoso	stationsCH(in).csv
+HZ-D01	dataset	Dataset del TPE2: estaciones de Suiza (stationsCH)	material/catedra/practica/stationsCH(in).csv		2026	reemplazada	stationsCH(in).csv
 HZ-D02	dataset	Dataset del TPE2: estaciones de Bélgica (stationsBE)	material/catedra/practica/stationsBE(in).csv		2026	vigente	stationsBE(in).csv
 HZ-R04	referencias	Repositorio template del TPE2	material/catedra/referencias/linktemplaterepotpe2.txt		2026	vigente	linktemplaterepotpe2.txt
+HZ-D03	dataset	Dataset del TPE2: estaciones de Suiza (stationsCH), descarga directa	material/catedra/practica/stationsCH.csv		2026	vigente	stationsCH.csv
