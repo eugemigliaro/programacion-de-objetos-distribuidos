@@ -108,6 +108,17 @@ Intentá responder sin mirar el apunte. Las respuestas breves y trazables están
 75. ¿Qué diferencia a un WebSocket de Server-Sent Events?
 76. ¿Por qué un broker de mensajería desacopla productores y consumidores?
 
+## TPE2
+
+77. En la query 1, ¿cómo se tratan las demoras negativas y qué estaciones no se listan?
+78. En la query 3, ¿de qué campo sale el día de la semana y de cuál la hora?
+79. ¿Cómo se calcula el cuadrante de una estación y en cuál cae Zürich HB con q = 0.1?
+80. En la query 4, ¿el puesto en el ranking se calcula antes o después de truncar la media?
+81. Un tren para en A (llegada 60 s, salida 60 s), B (180 s, 120 s) y C (300 s, 300 s). ¿Cuál es su efecto bola de nieve?
+82. ¿Qué momentos registra `timeX.txt` y con qué formato?
+83. ¿Cómo deben llamarse el cluster y las colecciones de Hazelcast, y por qué?
+84. ¿Qué tres análisis de tiempos pide el informe?
+
 ## Respuestas breves
 
 1. La concurrencia permite avances solapados; el paralelismo exige ejecución simultánea, normalmente sobre varios núcleos. [PC-T01, p. 18]
@@ -186,3 +197,11 @@ Intentá responder sin mirar el apunte. Las respuestas breves y trazables están
 74. Resolver un campo con una consulta por cada elemento de un listado; el batch loader agrupa los pedidos y hace un único llamado con N elementos. [API-T02, p. 20] [API-T02, p. 21]
 75. WebSocket es full duplex; SSE es unidireccional del servidor al cliente y se reconecta solo. [API-T02, p. 31] [API-T02, p. 32]
 76. Porque el productor deja el mensaje en el broker y se desentiende; el mensaje persiste hasta que un consumidor lo procesa, aunque algún servicio se caiga. [API-T02, p. 33]
+77. Los adelantos cuentan como 0 s y no compensan los atrasos. No se listan las estaciones ausentes del archivo de estaciones ni las que no tienen servicios. [HZ-E01]
+78. El día sale de la fecha operativa y la hora, de la salida prevista. [HZ-E01]
+79. Es (⌊lat / q⌋, ⌊lon / q⌋); Zürich HB cae en (473, 85). [HZ-E01]
+80. Antes: la posición se calcula con el valor completo y después se trunca a dos decimales. [HZ-E01]
+81. (180 − 60) + (300 − 120) = 300 s. [HZ-E01]
+82. Inicio y fin de la lectura (el fin incluye la subida al cluster) e inicio y fin de cada job (el fin del último incluye la escritura de la respuesta), con formato `dd/MM/yyyy HH:mm:ss:SSS`. [HZ-E01]
+83. Deben empezar con `g` y el número de grupo, para no chocar con las colecciones de otros grupos que prueban en la misma red. [HZ-E01]
+84. Tiempos según la cantidad de nodos (hasta cinco), con y sin combiner, y con y sin una optimización elegida por el grupo. [HZ-E01]

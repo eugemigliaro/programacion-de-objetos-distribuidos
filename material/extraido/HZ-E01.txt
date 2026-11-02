@@ -1,0 +1,670 @@
+FUENTE: HZ-E01
+TITULO: Trabajo Práctico Especial 2: Servicios de Trenes
+ORIGINAL: material/catedra/practica/TPE2 Servicios de Trenes.md
+NOTA: copia buscable del Markdown original sin la imagen de portada embebida en base64 (foto decorativa de un tren de SBB, 768x213 px).
+
+![Foto de Bruno Raffa en Unsplash][image1]  
+Foto de [Bruno Raffa](https://unsplash.com/es/@360cbfoto?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText) en [Unsplash](https://unsplash.com/es/fotos/un-tren-en-una-estacion-de-tren-PQdXnyjU8E0?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
+
+# 
+
+# **Trabajo Práctico Especial 2**
+
+# **Servicios de Trenes**
+
+*28 de octubre de 2026*
+
+# Índice {#índice}
+
+[Índice](#índice)
+
+[**Objetivo**](#objetivo)
+
+[**Introducción**](#introducción)
+
+[**Descripción Funcional**](#descripción-funcional)
+
+[🚄 Datos de servicios de Suiza 🇨🇭 (trainsCH.csv)](#🚄-datos-de-servicios-de-suiza-🇨🇭-\(trainsch.csv\))
+
+[🚉 Datos de estaciones de Suiza 🇨🇭 (stationsCH.csv)](#🚉-datos-de-estaciones-de-suiza-🇨🇭-\(stationsch.csv\))
+
+[🚄 Datos de servicios de Bélgica 🇧🇪 (trainsBE.csv)](#🚄-datos-de-servicios-de-bélgica-🇧🇪-\(trainsbe.csv\))
+
+[🚉 Datos de estaciones de Bélgica 🇧🇪 (stationsBE.csv)](#🚉-datos-de-estaciones-de-bélgica-🇧🇪-\(stationsbe.csv\))
+
+[**Requerimientos**](#requerimientos)
+
+[📊 Query 1: Demoras de llegada y salida por estación](#📊-query-1:-demoras-de-llegada-y-salida-por-estación)
+
+[📊 Query 2: Mayor demora de llegada por operador y línea](#📊-query-2:-mayor-demora-de-llegada-por-operador-y-línea)
+
+[📊 Query 3: Hora con más salidas demoradas para cada día hábil de la semana por estación (para ciertas áreas)](#📊-query-3:-hora-con-más-salidas-demoradas-para-cada-día-hábil-de-la-semana-por-estación-\(para-ciertas-áreas\))
+
+[📊 Query 4: Top n estaciones con mayor demora media de llegada por cuadrante](#📊-query-4:-top-n-estaciones-con-mayor-demora-media-de-llegada-por-cuadrante)
+
+[📊 Query 5: Tren con mayor efecto “bola de nieve” de demora con al menos N paradas por fecha operativa](#📊-query-5:-tren-con-mayor-efecto-“bola-de-nieve”-de-demora-con-al-menos-n-paradas-por-fecha-operativa)
+
+[📊 Query 6: YTD de demora neta acumulada por estación (Sólo para grupos de 5 integrantes)](#📊-query-6:-ytd-de-demora-neta-acumulada-por-estación-\(sólo-para-grupos-de-5-integrantes\))
+
+[**Hechos y Consideraciones**](#hechos-y-consideraciones)
+
+[**Requisitos**](#requisitos)
+
+[**Informe**](#informe)
+
+[1\. Decisiones de diseño e implementación de los jobs](#1.-decisiones-de-diseño-e-implementación-de-los-jobs)
+
+[2\. Análisis de tiempos de ejecución](#2.-análisis-de-tiempos-de-ejecución)
+
+[3\. Potenciales puntos de mejora y/o expansión](#3.-potenciales-puntos-de-mejora-y/o-expansión)
+
+[**Uso de Git**](#uso-de-git)
+
+[**Material a entregar**](#material-a-entregar)
+
+[**Corrección**](#corrección)
+
+[**Cronograma**](#cronograma)
+
+[**Dudas sobre el TPE**](#dudas-sobre-el-tpe)
+
+[**Recomendaciones**](#recomendaciones)
+
+# Objetivo {#objetivo}
+
+Diseñar e implementar una aplicación de consola que utilice el **modelo de programación MapReduce** junto con el framework **Hazelcast** para el procesamiento de **servicios de trenes**, basado en datos reales.   
+Para este trabajo se busca poder procesar datos de servicios de trenes de **🇨🇭Suiza y 🇧🇪Bélgica**.   
+Los datos son extraídos de los respectivos portales de gobierno en formato CSV. 
+
+# Introducción {#introducción}
+
+	La **SBB CFF FFS (Ferrocarriles Federales Suizos)** es la principal empresa ferroviaria de **🇨🇭Suiza**. A través de sus 3000 km de vías transporta más de 300[^1] millones de pasajeros al año cubriendo más de 800 estaciones. Por su parte, **Infrabel** es la empresa administradora de infraestructuras ferroviarias de **🇧🇪Bélgica**. Supervisa más de 3500[^2] kilómetros de vías que transportan a más de 180 millones de pasajeros.  
+	Se cuenta con un registro de todos los servicios de trenes ofrecidos, indicando para cada uno, las demoras respecto a los horarios anunciados, tanto de llegada como de salida de cada estación.  
+	Todos los registros refieren a servicios correspondientes a paradas no canceladas con horarios previstos y reales completos.
+
+# Descripción Funcional {#descripción-funcional}
+
+A continuación se lista el ejemplo de uso que se busca para la aplicación: procesar los datos de servicios de trenes de **🇨🇭Suiza** y **🇧🇪Bélgica**. Sin embargo, es importante recordar que la mayor parte de la implementación no debe estar atada a la realidad de los ejemplos de uso. **Por ejemplo, las estadísticas serán las que la aplicación obtenga en ejecución a partir de los archivos de servicios y de estaciones y no serán aceptadas implementaciones que tengan fijos estos datos.** En otras palabras, la implementación deberá funcionar también para procesar los datos de servicios de trenes de cualquier otro país, manteniendo siempre la estructura de los archivos que se presentan a continuación. 
+
+## **🚄 Datos de servicios de Suiza 🇨🇭 (trainsCH.csv)** {#🚄-datos-de-servicios-de-suiza-🇨🇭-(trainsch.csv)}
+
+- **Origen (No Descargarlo):**  
+  * [https\://archive.opentransportdata.swiss/actual\_data\_archive.htm](https://archive.opentransportdata.swiss/actual_data_archive.htm)  
+- **Descarga:**  
+  * [trainsCH.csv.zip](https://itba2-my.sharepoint.com/:u:/r/personal/fmeola_itba_edu_ar/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Ffmeola%5Fitba%5Fedu%5Far%2FDocuments%2FPOD%2FtrainsCH%2Ecsv%2Ezip&parent=%2Fpersonal%2Ffmeola%5Fitba%5Fedu%5Far%2FDocuments%2FPOD&share=cQox3%5FH4ujuHTptwkx8PB59kEgUCncjJOrbX2%2D8GZd003Q%2D9hQ)  
+- **Cantidad de registros:**   
+  * **Año 2024: 42.782.820**  
+- **Campos:**   
+  * **fecha**: Fecha operativa en formato yyyy-MM-dd (String)  
+  * **id\_tren**: Identificador del tren (String)  
+  * **id\_estacion**: Identificador de la estación del servicio (int)  
+  * **operador**: Nombre del operador del servicio (String)  
+  * **linea**: Nombre de la línea del servicio (String)  
+  * **llegada\_prevista**: Fecha y hora de la llegada prevista del servicio a la estación  en formato yyyy-MM-dd HH:mm:ss (String)  
+  * **salida\_prevista**: Fecha y hora de la salida prevista del servicio desde la estación  en formato yyyy-MM-dd HH:mm:ss (String)  
+  * **demora\_llegada\_s**: Segundos de demora de la llegada del servicio a la estación (int). Si es negativo es porque llegó adelantado.  
+  * **demora\_salida\_s**: Segundos de demora de la salida del servicio desde la estación (int). Si es negativo es porque salió adelantado.
+
+El archivo se compone de una primera línea de encabezado, con los títulos de cada campo. De la segunda línea en adelante, **cada línea representa un servicio de un tren en una estación** conteniendo los datos de cada uno de los campos, separados por “;”.  Por ejemplo:
+
+**fecha;id\_tren;id\_estacion;operador;linea;llegada\_prevista;salida\_prevista;demora\_llegada\_s;demora\_salida\_s**
+
+2024-01-15;85:81:9437:000;8500272;Aare Seeland mobil (snb);S11;2024-01-15 13:37:00;2024-01-15 13:37:00;54;72
+
+2024-01-30;85:11:19242:001;8503504;Schweizerische Bundesbahnen SBB;S12;2024-01-30 12:12:00;2024-01-30 12:13:00;27;27
+
+2024-01-05;85:11:25780:001;8505214;Schweizerische Bundesbahnen SBB;S10;2024-01-05 19:07:00;2024-01-05 19:09:00;61;-40
+
+## **🚉 Datos de estaciones de Suiza 🇨🇭 (stationsCH.csv)** {#🚉-datos-de-estaciones-de-suiza-🇨🇭-(stationsch.csv)}
+
+- **Origen (No Descargarlo):**  
+  * [https\://data.opentransportdata.swiss/en/dataset/service-points-full](https://data.opentransportdata.swiss/en/dataset/service-points-full)  
+- **Descarga:**  
+  * [stationsCH.csv](https://itba2-my.sharepoint.com/:x:/g/personal/fmeola_itba_edu_ar/cQrmEX22UP6CSIT95yCp1ylLEgUCsfusbzIvZAnEw1EkXoXc6w)  
+- **Cantidad de registros: 1539**  
+- **Campos:**   
+  * **id\_estacion**: Identificador de la estación (int)  
+  * **nombre\_estacion**: Nombre de la estación (String)  
+  * **canton**: Nombre del área geográfica (String)  
+  * **latitud**: Latitud de la estación (double)  
+  * **longitud**: Longitud de la estación (double)  
+    
+
+El archivo se compone de una primera línea de encabezado, con los títulos de cada campo. De la segunda línea en adelante, **cada línea representa una estación** conteniendo los datos de cada uno de los campos, separados por “;”.  Por ejemplo:
+
+**id\_estacion;nombre\_estacion;canton;latitud;longitud**
+
+8502188;Zufikon Hammergut;Aargau;47.35595499022;8.35458862375
+
+8507493;Interlaken West;Bern;46.68262798036;7.8514531376
+
+8503123;Wetzikon ZH;Zürich;47.31803163151;8.79228973378
+
+## **🚄 Datos de servicios de Bélgica 🇧🇪 (trainsBE.csv)** {#🚄-datos-de-servicios-de-bélgica-🇧🇪-(trainsbe.csv)}
+
+- **Origen (No Descargarlo):**  
+  * [https\://infrabel.opendatasoft.com/explore/dataset/stiptheid-gegevens-maandelijksebestanden/information/](https://infrabel.opendatasoft.com/explore/dataset/stiptheid-gegevens-maandelijksebestanden/information/)  
+- **Descarga:**  
+  * [trainsBE.csv.zip](https://itba2-my.sharepoint.com/:u:/r/personal/fmeola_itba_edu_ar/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Ffmeola%5Fitba%5Fedu%5Far%2FDocuments%2FPOD%2FtrainsBE%2Ecsv%2Ezip&parent=%2Fpersonal%2Ffmeola%5Fitba%5Fedu%5Far%2FDocuments%2FPOD&share=cQoiBUXPa2mzTpG%2Di59dQxrcEgUCKfX%5FASnqBC2pIU8X%2DnastA)  
+- **Cantidad de registros:**   
+  * **Año 2024: 20.809.934**  
+- **Campos:**   
+  * **DATDEP**: Fecha operativa en formato ddMMMyyyy con el mes abreviado en inglés y en mayúsculas (String)  
+  * **TRAIN\_NO**: Identificador del tren (String)  
+  * **TRAIN\_SERV**: Nombre del operador del servicio (String)  
+  * **RELATION**: Nombre de la línea del servicio (String)  
+  * **PTCAR\_NO**: Identificador de la estación del servicio (int)  
+  * **PLANNED\_DATE\_ARR**: Fecha de la llegada prevista del servicio a la estación en formato ddMMMyyyy con el mes abreviado en inglés y en mayúsculas (String)  
+  * **PLANNED\_TIME\_ARR**: Hora de la llegada prevista del servicio a la estación en formato H:mm:ss (String)  
+  * **PLANNED\_DATE\_DEP**: Fecha de la salida prevista del servicio desde la estación en formato ddMMMyyyy con el mes abreviado en inglés y en mayúsculas (String)  
+  * **PLANNED\_TIME\_DEP**: Hora de la salida prevista del servicio desde la estación en formato H:mm:ss (String)  
+  * **DELAY\_ARR**: Segundos de demora de la llegada del servicio a la estación (int). Si es negativo es porque llegó adelantado.  
+  * **DELAY\_DEP**: Segundos de demora de la salida del servicio desde la estación (int). Si es negativo es porque salió adelantado.
+
+El archivo se compone de una primera línea de encabezado, con los títulos de cada campo. De la segunda línea en adelante, **cada línea representa un servicio de un tren en una estación** conteniendo los datos de cada uno de los campos, separados por “;”.  Por ejemplo:
+
+**DATDEP;TRAIN\_NO;TRAIN\_SERV;RELATION;PTCAR\_NO;PLANNED\_DATE\_ARR;PLANNED\_TIME\_ARR;PLANNED\_DATE\_DEP;PLANNED\_TIME\_DEP;DELAY\_ARR;DELAY\_DEP**
+
+30SEP2024;T:1960;SNCB/NMBS;L B1-2;216;30SEP2024;11:44:00;30SEP2024;11:44:00;50;90
+
+21AUG2024;T:4317;SNCB/NMBS;IC 10;924;21AUG2024;17:49:10;21AUG2024;17:50:00;241;244
+
+22AUG2024;T:2292;SNCB/NMBS;L B3;563;22AUG2024;22:04:00;22AUG2024;22:05:00;43;33
+
+**...**
+
+## **🚉 Datos de estaciones de Bélgica 🇧🇪 (stationsBE.csv)** {#🚉-datos-de-estaciones-de-bélgica-🇧🇪-(stationsbe.csv)}
+
+- **Origen (No Descargarlo):**  
+  * [https\://infrabel.opendatasoft.com/explore/dataset/perronhoogten-in-stations/information/?disjunctive.platform\_type\&disjunctive.hoogte\&disjunctive.hauteur\&disjunctive.height\&disjunctive.area\&disjunctive.arrondissement\&disjunctive.type\_stopping\_point\&disjunctive.longnamefrench\&disjunctive.ptcarid](https://infrabel.opendatasoft.com/explore/dataset/perronhoogten-in-stations/information/?disjunctive.platform_type&disjunctive.hoogte&disjunctive.hauteur&disjunctive.height&disjunctive.area&disjunctive.arrondissement&disjunctive.type_stopping_point&disjunctive.longnamefrench&disjunctive.ptcarid)  
+- **Descarga:**  
+  * [stationsBE.csv](https://itba2-my.sharepoint.com/:x:/g/personal/fmeola_itba_edu_ar/cQrYEC8JgpgfRZ82BGDhT7brEgUCpXAuORjZU-u1YTICVmc_ww)  
+- **Cantidad de registros: 538**  
+- **Campos:**   
+  * **PTCAR ID**: Identificador de la estación (int)  
+  * **Stopping point name**: Nombre de la estación (String)  
+  * **Area**: Identificador y nombre del área geográfica separados por un guión medio (String). De aquí en adelante, al mencionar área, siempre se refiere al nombre y nunca al identificador.  
+  * **Geo Point**: Latitud y Longitud de la estación separados por “, ” (String)  
+    
+
+El archivo se compone de una primera línea de encabezado, con los títulos de cada campo. De la segunda línea en adelante, **cada línea representa una estación** conteniendo los datos de cada uno de los campos, separados por “;”.  Por ejemplo:
+
+**PTCAR ID;Stopping point name;Area;Geo Point**
+
+530;HAUTE-FLONE;4-Liège;50.55424859604318, 5.331294580831139
+
+617;ROCHEFORT-JEMELLE;4-Liège;50.16041579601375, 5.266796362727852
+
+82;AUVELAIS;5-Charleroi;50.449170409737555, 4.630700388895104
+
+**...**
+
+# Requerimientos {#requerimientos}
+
+La aplicación debe poder resolver el conjunto de consultas listadas más abajo.
+
+## **Invocación**
+
+**Cada corrida de la aplicación resuelve sólo una de las *queries* sobre los datos obtenidos a partir de los archivos CSV provistos en esa invocación** (archivos CSV de servicios y de estaciones)
+
+Por ejemplo:
+
+\$\> sh queryX.sh \-Daddresses='xx.xx.xx.xx:XXXX;yy.yy.yy.yy:YYYY' \-Dcountry=ZZ \-DinPath=XX \-DoutPath=YY \[params\]
+
+donde:
+
+- queryX.sh es el script que corre la query X.   
+- \-Daddresses refiere a las direcciones IP de los nodos con sus puertos (una o más, separadas por punto y coma)   
+- \-Dcountry indica con qué dataset de país se desea trabajar. Los únicos valores posibles son **CH** y **BE**.  
+- \-DinPath indica el path donde están los archivos de entrada de servicios y estaciones  
+- \-DoutPath indica el path donde se crearán ambos archivos de salida **queryX.csv** y **timeX.txt**.   
+- \[params\] son los parámetros extras que corresponden para algunas queries.
+
+## **Salida:**
+
+La respuesta a la *query* quedará en un archivo CSV queryX.csv.  
+Para medir performance, se deberán escribir en un archivo TXT timeX.txt los *timestamp* de los siguientes momentos:
+
+- Inicio de la lectura de los archivos de entrada  
+- Fin de lectura de los archivos de entrada (incluye la subida de los datos al cluster).  
+- Inicio de un trabajo MapReduce  
+- Fin de un trabajo MapReduce (incluye la escritura del archivo de respuesta)
+
+Todos estos momentos deben ser escritos con el timestamp en formato: dd/MM/yyyy HH:mm:ss:SSS y deben ser claramente identificables.  
+Si para una *query* se requieren dos o más jobs, aclarar el inicio y fin para cada uno, donde el fin del último es el que incluye la escritura del archivo de respuesta.
+
+## **Ejemplo:**
+
+	De esta forma invocando a la aplicación mediante a:
+
+\$\> sh query1.sh \-Daddresses='10.6.0.1:5701;10.6.0.2:5701' \-Dcountry=CH \-DinPath=/afs/it.itba.edu.ar/pub/pod/ \-DoutPath=/afs/it.itba.edu.ar/pub/pod-write/
+
+resuelve a:
+
+* Ejecutar la ***query*** **1**   
+* a partir de los datos presentes en **/afs/it.itba.edu.ar/pub/pod/trainsCH.csv** y **/afs/it.itba.edu.ar/pub/pod/stationsCH.csv**   
+* utilizando los nodos **10.6.0.1** y **10.6.0.2** para su procesamiento.   
+* Se crearán los archivos:  
+  * **/afs/it.itba.edu.ar/pub/pod-write/query1.csv** con resultado de la *query.*  
+  * **/afs/it.itba.edu.ar/pub/pod-write/time1.txt** que contendrá los *timestamp* de inicio y fin de la lectura del archivo y de los trabajos map/reduce.
+
+Ejemplo del archivo de tiempos (no es necesario respetar exactamente este formato):
+
+28/10/2026 14:43:09:001 INFO  \[main\] Client (Client.java:76) \- Inicio de la lectura del archivo  
+28/10/2026 14:43:23:002 INFO  \[main\] Client (Client.java:173) \- Fin de lectura del archivo  
+28/10/2026 14:43:23:020 INFO  \[main\] Client (Client.java:87) \- Inicio del trabajo map/reduce  
+28/10/2026 14:43:23:901 INFO  \[main\] Client (Client.java:166) \- Fin del trabajo map/reduce
+
+## **📊 Query 1: Demoras de llegada y salida por estación** {#📊-query-1:-demoras-de-llegada-y-salida-por-estación}
+
+Donde cada línea de la salida contenga, separados por “;” la **estación**, el **área geográfica** de la estación, el **total de servicios** **que pasaron por la estación**, el **total de segundos de demora de llegada a la estación** y el **total de segundos de demora de salida de la estación.**
+
+El orden de impresión es **descendente** por **total de servicios que pasaron por la estación** y desempata **alfabético** por estación.
+
+Los valores negativos de segundos de demora **(los adelantos) no compensan los atrasos**, se deben considerar como 0 segundos de demora.
+
+Sólo se deben listar **las** **estaciones presentes en el archivo de estaciones**.
+
+Si una estación no cuenta con al menos un servicio, la misma no debe listarse.
+
+- Parámetros adicionales: Ninguno
+
+- Ejemplo de invocación: **sh query1.sh \-Daddresses='10.6.0.1:5701' \-Dcountry=CH \-DinPath=. \-DoutPath=.**
+
+- Salida de ejemplo 🇨🇭: 
+
+
+**estacion;area;servicios;demora\_llegada;demora\_salida**  
+Zürich HB;Zürich;38236;2069660;2423592  
+Zürich Oerlikon;Zürich;30302;1883906;1947603  
+Zürich Stadelhofen;Zürich;23761;1226691;1854446  
+Zürich Hardbrücke;Zürich;21683;1489341;2606618  
+Bern;Bern;16612;897429;1033160  
+**...**
+
+- Salida de ejemplo 🇧🇪: 
+
+
+**estacion;area;servicios;demora\_llegada;demora\_salida**  
+BRUXELLES-CHAPELLE;Brussel/Bruxelles;34328;6352005;6373555  
+BRUXELLES-CONGRES;Brussel/Bruxelles;34149;6279602;6325830  
+BRUXELLES-CENTRAL;Brussel/Bruxelles;34057;6514480;7550023  
+BRUXELLES-NORD;Brussel/Bruxelles;33926;6011401;5824191  
+SCHAERBEEK;Brussel/Bruxelles;24111;4122169;4167416  
+**...**
+
+## **📊 Query 2: Mayor demora de llegada por operador y línea** {#📊-query-2:-mayor-demora-de-llegada-por-operador-y-línea}
+
+Donde cada línea de la salida contenga, separados por “;” el **operador**, la **línea** y los datos del servicio **con mayor demora de llegada para ese operador y línea.** Estos datos incluyen la **estación**, el **tren**, **la fecha y hora prevista de llegada** y los **segundos de demora de llegada**.
+
+El orden de impresión es **descendente** por **segundos de demora de llegada** y desempata **alfabético** por operador y luego **alfabético** por línea.
+
+Sólo se deben considerar los servicios de **las** **estaciones presentes en el archivo de estaciones**.
+
+En caso de que, para un mismo operador y línea, existan dos o más servicios con la misma mayor demora de llegada, quedarse con el servicio correspondiente a la estación menor alfabéticamente. De continuar el empate preferir el servicio correspondiente al tren con el identificador menor en orden alfabético. Por último, y de continuar el empate, preferir el servicio correspondiente a la fecha operativa más reciente.
+
+Las fechas y horas deben respetar el formato dd/MM/yyyy HH:mm:ss.
+
+En caso de que, para un operador y línea, no exista un servicio con demora de llegada (todos los registrados son adelantos o con 0 segundos de demora), entonces la fila no debe listarse. 
+
+- Parámetros adicionales: Ninguno
+
+- Ejemplo de invocación: **sh query2.sh \-Daddresses='10.6.0.1:5701' \-Dcountry=CH \-DinPath=. \-DoutPath=.**
+
+- Salida de ejemplo 🇨🇭: 
+
+**operador;linea;estacion;tren;llegada;demora\_llegada**  
+Transports de la région Morges-Bière-Cossonay;R56;Reverolle;85:29:105:000;05/10/2024 06:31:00;57652  
+Transports de la région Morges-Bière-Cossonay;R57;Villars-Bozon;85:29:459:000;04/10/2024 20:42:00;36321  
+Lugano-Ponte Tresa;S60;Magliaso;85:47:215:000;10/08/2024 20:30:00;19823  
+Aargau Verkehr AG;S17;Zufikon;85:31:7639:000;17/12/2024 14:06:00;19029  
+Aargau Verkehr AG;S14;Muhen;85:96:501:000;04/10/2024 05:18:00;18321  
+...
+
+- Salida de ejemplo 🇧🇪: 
+
+
+**operador;linea;estacion;tren;llegada;demora\_llegada**  
+EURSLEEPER;INT;BRUXELLES-CHAPELLE;T:452;15/11/2024 09:24:00;22325  
+SNCB/NMBS;TGV;HALLE;T:9891;26/07/2024 09:35:00;20790  
+THI-FACT;THAL;ESSEN;T:9381;26/07/2024 21:45:25;17736  
+SNCB/NMBS;ICE;CHENEE;T:10;26/06/2024 20:40:00;14211  
+THI-FACT;EURST;MAUBRAY;T:9110;27/08/2024 09:11:17;14107  
+**...**
+
+## **📊 Query 3: Hora con más salidas demoradas para cada día hábil de la semana por estación (para ciertas áreas)** {#📊-query-3:-hora-con-más-salidas-demoradas-para-cada-día-hábil-de-la-semana-por-estación-(para-ciertas-áreas)}
+
+Donde cada línea de la salida contenga, separados por “;” la **estación**, el **área geográfica** de la estación, y la **hora del día** (valores de 0 a 23\) **con más salidas demoradas para cada día hábil de la semana** en función de la fecha operativa del servicio y de la hora de salida prevista del servicio.
+
+Una **salida demorada** consiste en un servicio donde la demora en segundos de la salida es mayor a cero.
+
+Los **días hábiles** son los días de Lunes a Viernes inclusive, sin excluir feriados.
+
+El orden de impresión es **alfabético por estación.**
+
+Sólo se deben listar **las** **estaciones presentes en el archivo de estaciones** y que estén ubicadas en las áreas geográficas que se envían por el parámetro adicional obligatorio areas.
+
+En caso de que, para una estación y día de la semana existan dos o más horas con el mismo mayor valor de salidas demoradas, quedarse con la hora menor.
+
+En caso de que, para una estación y día de la semana no exista al menos un servicio que cuente con una salida demorada, entonces listar N/A. Si para una estación se obtendría N/A para los cinco días hábiles entonces la fila no debe listarse.
+
+- Parámetros adicionales:   
+  * **areas:** String, valores separados por punto y coma
+
+- Ejemplo de invocación: **sh query3.sh \-Daddresses='10.6.0.1:5701' \-Dcountry=CH \-DinPath=. \-DoutPath=. \-Dareas='Bern;Zürich'**
+
+- Salida de ejemplo 🇨🇭 con **\-Dareas='Bern;Zürich'**: 
+
+**estacion;area;lunes;martes;miercoles;jueves;viernes**  
+Aarberg;Bern;18;17;9;6;10  
+Aareschlucht Ost (Bahn);Bern;8;12;6;7;6  
+Aareschlucht West;Bern;6;18;16;6;8  
+Aarwangen;Bern;20;9;9;19;12  
+Aarwangen Schloss;Bern;10;6;12;9;7  
+**...**
+
+- Salida de ejemplo 🇧🇪 con **\-Dareas='Brussel/Bruxelles;Liège'**: 
+
+**estacion;area;lunes;martes;miercoles;jueves;viernes**  
+AMAY;Liège;8;13;10;7;18  
+AMPSIN;Liège;15;6;17;16;19  
+ANDENNE;Liège;7;16;15;6;19  
+ANDERLECHT;Brussel/Bruxelles;9;8;8;9;8  
+ANGLEUR;Liège;18;18;16;7;7  
+**...**
+
+## **📊 Query 4: Top n estaciones con mayor demora media de llegada por cuadrante** {#📊-query-4:-top-n-estaciones-con-mayor-demora-media-de-llegada-por-cuadrante}
+
+Donde cada línea de la salida contenga, separados por “;” la **latitud del** **cuadrante**, la **longitud del cuadrante**, el **puesto** (de 1 a n inclusive donde n es un parámetro adicional obligatorio), la **estación que ocupa ese puesto en el ranking de mayor demora media para ese cuadrante,** el **área geográfica** de la estación, y dicho valor de **mayor demora media en segundos**.
+
+Un **cuadrante** consiste en una porción del espacio geográfico visto en forma de grilla. Tiene un tamaño fijo de q grados en latitud y longitud, donde q es un parámetro adicional obligatorio. Para conseguir el cuadrante correspondiente a una coordenada geográfica se debe obtener el piso de la división de latitud y longitud por q. Por ejemplo para un q de 0.1 la coordenada de la estación Zürich HB (47.37817667422, 8.5402123491) se corresponde con el cuadrante (473, 85).
+
+La **demora media de llegada** de una estación consiste en la suma de los segundos de demora de llegada (considerando tanto valores positivos como negativos y cero) dividido el total de servicios ofrecidos en la estación. La demora media de una estación podría ser positiva, negativa o cero.
+
+El orden de impresión es **ascendente** por **latitud del cuadrante**, desempata **ascendente** por **longitud del cuadrante** y luego **ascendente por puesto en el ranking**. 
+
+Los valores de los promedios se deben truncar (no redondear) a dos decimales. Se deben imprimir siempre dos decimales utilizando punto como separador decimal. La posición en el ranking se debe calcular antes de truncar.
+
+En caso de que, para un cuadrante, existan dos o más estaciones con la misma demora media de llegada, desempatar alfabéticamente por estación.
+
+En caso de que, para un cuadrante, existan menos de n estaciones que registran servicios, listar únicamente las que registran servicios. 
+
+Sólo se deben listar **las** **estaciones presentes en el archivo de estaciones** ubicadas en \[latMin, latMax) x \[lonMin, lonMax) donde los cuatro corresponden a parámetros adicionales obligatorios.
+
+- Parámetros adicionales:   
+  * **n:** int mayor a 0  
+  * **q:** double en (0, 1\]  
+  * **latMin:** double menor a latMax  
+  * **latMax:** double   
+  * **lonMin:** double menor a lonMax  
+  * **lonMax:** double
+
+- Ejemplo de invocación: **sh query4.sh \-Daddresses='10.6.0.1:5701' \-Dcountry=CH \-DinPath=. \-DoutPath=. \-Dn=3 \-Dq=0.1 \-DlatMin=46.0 \-DlatMax=48.0 \-DlonMin=6.0 \-DlonMax=9.0**
+
+- Salida de ejemplo 🇨🇭 con **\-Dn=3 \-Dq=0.1 \-DlatMin=46.0 \-DlatMax=48.0 \-DlonMin=6.0 \-DlonMax=9.0**: 
+
+**cuad\_lat;cuad\_lon;puesto;estacion;area;media\_demora\_llegada**  
+460;69;1;Le Châtelard VS;Valais;66.48  
+460;69;2;Le Châtelard-Frontière;Valais;55.90  
+460;69;3;Finhaut;Valais;26.56  
+460;70;1;Martigny-Expo;Valais;438.00  
+460;70;2;Martigny-Croix;Valais;78.10  
+...
+
+- Salida de ejemplo 🇧🇪 con **\-Dn=3 \-Dq=0.1 \-DlatMin=50.0 \-DlatMax=52.0 \-DlonMin=3.0 \-DlonMax=6.0**: 
+
+**cuad\_lat;cuad\_lon;puesto;estacion;area;media\_demora\_llegada**  
+500;45;1;MARIEMBOURG;Charleroi;85.13  
+500;52;1;POIX-SAINT-HUBERT;Liège;163.27  
+500;52;2;GRUPONT;Liège;143.20  
+501;45;1;PHILIPPEVILLE;Charleroi;25.60  
+501;49;1;BEAURAING;Liège;37.10  
+...
+
+## **📊 Query 5: Tren con mayor efecto “bola de nieve” de demora con al menos N paradas por fecha operativa** {#📊-query-5:-tren-con-mayor-efecto-“bola-de-nieve”-de-demora-con-al-menos-n-paradas-por-fecha-operativa}
+
+Donde cada línea de la salida contenga, separados por “;” la **fecha operativa**, el **tren con mayor efecto “bola de nieve” de demora** para esa fecha, el **total de servicios involucrados** y **dicho valor de demora en segundos**.
+
+	Suponiendo que un tren, para una fecha operativa, ofrece los siguientes tres servicios:
+
+| Estación | Demora de llegada (s) | Demora de salida (s) |
+| :---- | :---- | :---- |
+| **A** | 60 | 60 |
+| **B** | 180 | 120 |
+| **C** | 300 | 300 |
+
+**Para obtener el efecto “bola de nieve”** se calcula primero la diferencia entre la demora de llegada a B y la demora de salida de A. Luego se le suma la diferencia entre la demora de llegada a C y la demora de salida de B. Así para el ejemplo indicado:
+
+$(180s\ -\ 60s)\ +\ (300s\ -\ 120s)\ =\ 300s$
+
+el efecto “bola de nieve” es de **300** segundos.
+
+Para obtener todas las estaciones ordenadas cronológicamente utilizar la fecha y hora prevista de llegada en orden cronológico. En caso de empate, utilizar la fecha y hora prevista de salida también en orden cronológico. De mantenerse el empate, ordenar alfabéticamente por estación.
+
+Los valores de las demoras de llegada y de salida pueden ser tanto positivos como negativos y cero.
+
+	Para identificar todas las estaciones de un tren en una fecha operativa considerar todos los servicios que tienen el mismo identificador de tren y el mismo operador.
+
+El orden de impresión es **cronológico por fecha operativa.**
+
+En caso de que, para una fecha operativa, existan dos o más trenes con el mismo mayor efecto  “bola de nieve” de demora, se debe desempatar alfabético por identificador de tren.
+
+Sólo se deben considerar los servicios de **las** **estaciones presentes en el archivo de estaciones**.
+
+Sólo se deben considerar los trenes con al menos N paradas para esa fecha operativa, donde N es un parámetro adicional obligatorio minServices. Una parada consiste en un servicio de un tren en una estación.
+
+En caso de que, para una fecha operativa, no exista ningún tren con al menos N paradas y un efecto “bola de nieve” mayor que cero, la fecha no debe listarse.
+
+Las fechas deben respetar el formato dd/MM/yyyy.
+
+- Parámetros adicionales:   
+  * **minServices:** int mayor a 1
+
+- Ejemplo de invocación: **sh query5.sh \-Daddresses='10.6.0.1:5701' \-Dcountry=CH \-DinPath=. \-DoutPath=. \-DminServices=3**
+
+- Salida de ejemplo 🇨🇭 con **\-DminServices=3**: 
+
+**fecha;tren;servicios;efecto\_bola\_nieve**  
+01/01/2024;85:72:4621:000;3;663  
+02/01/2024;85:48:542:000;3;618  
+03/01/2024;85:64:2233:000;3;2752  
+04/01/2024;85:64:2327:000;3;498  
+05/01/2024;85:65:11553:001;3;1138  
+...
+
+- Salida de ejemplo 🇧🇪 con **\-DminServices=3**: 
+
+**fecha;tren;servicios;efecto\_bola\_nieve**
+
+01/01/2024;T:2108;5;5570
+
+02/01/2024;T:1714;8;4748
+
+03/01/2024;T:3242;3;2166
+
+04/01/2024;T:3214;3;2025
+
+05/01/2024;T:3634;3;1428
+
+...
+
+## **📊 Query 6: YTD de demora neta acumulada por estación *(Sólo para grupos de 5 integrantes)*** {#📊-query-6:-ytd-de-demora-neta-acumulada-por-estación-(sólo-para-grupos-de-5-integrantes)}
+
+Donde cada línea de la salida contenga, separados por “;” la **estación**, el **área geográfica** de la estación, el **año**, el **mes** y **la demora neta acumulada *Year To Date* (YTD)** **en segundos para esa estación**.  
+Para un servicio de una estación, la **demora neta de esa estación** consiste en la diferencia entre la demora de salida de la estación y la demora de llegada de la estación. Los valores de las demoras de llegada y de salida pueden ser tanto positivos como negativos y cero. La demora neta acumulada de una estación para un año y mes consiste en la suma de las demoras netas de sus servicios cuya fecha operativa corresponde a ese año y mes.  
+	El **total YTD de un mes** consiste en la suma de las demoras netas acumuladas desde el primer mes del año hasta ese mes inclusive.  
+Por ejemplo:
+
+* El YTD de Enero de 2024 sólo contendrá el total de Enero de 2024\.   
+* El YTD de Febrero de 2024 contendrá el total de Enero de 2024 y de Febrero de 2024\.  
+* El YTD de Diciembre de 2024 contendrá el total de todos los meses de 2024\.
+
+
+El orden de impresión es **alfabético** por **estación** y desempata **cronológico** por **año** y **mes**.
+
+Sólo se deben listar **las** **estaciones presentes en el archivo de estaciones** que estén ubicadas en las áreas geográficas que se envían por el parámetro adicional obligatorio areas y que además estén ubicadas en \[latMin, latMax) x \[lonMin, lonMax) donde los cuatro corresponden a parámetros adicionales obligatorios.
+
+Aunque el dataset provisto sólo contenga registros de un año (2024) se debe contemplar la existencia de servicios de distintos años. El total YTD se reinicia cada vez que se cambia de año.
+
+En caso de que, para una estación, no existan servicios para un año y mes, el registro no debe listarse.
+
+- Parámetros adicionales:   
+  * **areas:** String, valores separados por punto y coma  
+  * **latMin:** double menor a latMax  
+  * **latMax:** double   
+  * **lonMin:** double menor a lonMax  
+  * **lonMax:** double
+
+- Ejemplo de invocación: **sh query6.sh \-Daddresses='10.6.0.1:5701' \-Dcountry=CH \-DinPath=. \-DoutPath=. \-Dareas='Bern;Zürich' \-DlatMin=46.0 \-DlatMax=48.0 \-DlonMin=6.0 \-DlonMax=9.0**
+
+- Salida de ejemplo 🇨🇭 con **\-Dareas='Bern;Zürich' \-DlatMin=46.0 \-DlatMax=48.0 \-DlonMin=6.0 \-DlonMax=9.0**: 
+
+**estacion;area;anio;mes;demora\_ytd**  
+Aarberg;Bern;2024;1;4611  
+Aarberg;Bern;2024;2;8975  
+Aarberg;Bern;2024;3;12828  
+Aarberg;Bern;2024;4;17073  
+Aarberg;Bern;2024;5;20976  
+...  
+Zürich Wollishofen;Zürich;2024;8;41561  
+Zürich Wollishofen;Zürich;2024;9;46418  
+Zürich Wollishofen;Zürich;2024;10;51561  
+Zürich Wollishofen;Zürich;2024;11;55616  
+Zürich Wollishofen;Zürich;2024;12;67215
+
+- Salida de ejemplo 🇧🇪 con **\-Dareas='Brussel/Bruxelles;Liège' \-DlatMin=50.0 \-DlatMax=52.0 \-DlonMin=3.0 \-DlonMax=6.0**: 
+
+**estacion;area;anio;mes;demora\_ytd**  
+AMAY;Liège;2024;1;4547  
+AMAY;Liège;2024;2;8892  
+AMAY;Liège;2024;3;11436  
+AMAY;Liège;2024;4;14162  
+AMAY;Liège;2024;5;16839  
+...  
+YVOIR;Liège;2024;8;59499  
+YVOIR;Liège;2024;9;66336  
+YVOIR;Liège;2024;10;71810  
+YVOIR;Liège;2024;11;79938  
+YVOIR;Liège;2024;12;87329
+
+# Hechos y Consideraciones {#hechos-y-consideraciones}
+
+Para simplificar el desarrollo se pueden tomar los siguientes considerandos como ciertos:
+
+- El formato de los archivos es correcto, no es necesario validar que los nombres de las columnas coincidan, ni que el tipo de dato de los valores de una columna es el esperado ni que la cantidad de columnas es la esperada.  
+- Los valores de los parámetros de los clientes no contienen espacios.  
+- Si el archivo de salida existe, reemplazar el contenido (**no** ***appendear***).  
+- El carácter “;” nunca aparece dentro de los campos mencionados.  
+- La codificación de los archivos de entrada y salida debe ser **UTF-8**.  
+- Se entiende por orden alfabético al **orden natural** de la clase java.lang.String.  
+- Todos los archivos CSV de respuesta deben incluir encabezado. Si no hay resultados, el archivo debe contener únicamente el encabezado.
+
+# Requisitos {#requisitos}
+
+***El trabajo práctico debe realizarse en los mismos grupos formados para el primer trabajo práctico especial.***
+
+Se requiere implementar:
+
+- Cada una de las consultas utilizando **uno o más *job*s MapReduce** que pueda correr en un ambiente distribuido utilizando un *grid* de Hazelcast.  
+- Los clientes indicados cada uno como una aplicación de consola diferente utilizando **scripts de bash** independientes
+
+Los componentes del *job*, clases del modelo, *tests* y el diseño de cada elemento del proyecto queda a criterio del grupo, pero debe estar enfocado en:
+
+- Que funcione correctamente en un ambiente concurrente MapReduce en Hazelcast.  
+- Que sea eficiente para un gran volumen de datos, particularmente en tráfico de red.  
+- Mantener buenas prácticas de código como comentarios, reutilización, legibilidad y mantenibilidad.
+
+***Muy Importante:***
+
+| Respetar EXACTAMENTE Los nombres de los *scripts* y sus parámetros (Si se pide \-DinPath no se aceptará \-DinputPath, \-DpathEntrada, etc.) El orden y formato de salida enunciado para los archivos CSV de salida En TODOS los pom.xml que entreguen deberán definir El name con la siguiente convención: “tpe2-gX-Z” donde X es el número de grupo y Z es parent, api, server o client.  Por ejemplo:  \<name\>tpe2-g7-api\</name\> La versión 3.8.6 de hazelcast-all El nombre del cluster (\<group\>\<name\>) y los nombres de las colecciones de Hazelcast a utilizar en la implementación deben comenzar con “g” seguido del número de grupo. Por ej g7 para así evitar conflictos con las colecciones y poder hacer pruebas de distintos alumnos en simultáneo utilizando la misma red. |
+| :---- |
+
+# Informe {#informe}
+
+Además del código fuente se pide escribir un informe breve con 3 secciones:
+
+### **1\. Decisiones de diseño e implementación de los *jobs*** {#1.-decisiones-de-diseño-e-implementación-de-los-jobs}
+
+Cómo se diseñaron los componentes de cada trabajo MapReduce, qué decisiones se tomaron y con qué objetivos. Además alguna alternativa de diseño que se evaluó y descartó, comentando el porqué.
+
+### **2\. Análisis de tiempos de ejecución** {#2.-análisis-de-tiempos-de-ejecución}
+
+Se requieren 3 análisis de tiempos de ejecución:
+
+1. **Tiempos por nodo:**  En caso de poder, analizar la diferencia de tiempos de correr cada query aumentando la cantidad de nodos físicos (hasta 5 nodos) en una red local. De no poder, intentar predecir cómo sería el comportamiento.  
+2. **Combiner:** Seleccionar una query en la que les parezca que un combiner puede ayudar y hacer una comparación de los tiempos de ejecución con y sin combiner.  
+3. **Optimización particular:** Deben elegir una optimización potencial y comparar el comportamiento con y sin dicha optimización. Esta optimización puede ser en cualquier parte del proceso.
+
+### **3\. Potenciales puntos de mejora y/o expansión** {#3.-potenciales-puntos-de-mejora-y/o-expansión}
+
+En caso de que existieran alternativas de implementación que no pudieron explorar, alguna operación a agregarle al sistema que pueda resultar útil.   
+No está incluido en esta sección:
+
+- Test de unidad/integración
+
+# Uso de Git {#uso-de-git}
+
+Es obligatorio el uso de un repositorio Git para la resolución de este TPE. Deberán crear un repositorio donde todos los integrantes del grupo colaboren con la implementación. El repositorio debe crearse a partir del *template repository* indicado en Campus (usando la opción *Use this template \-\> Create a new repository*). No se aceptarán entregas que utilicen un repositorio ​git ​con un único *​commit* que consista en la totalidad del código a entregar.  
+Los distintos *​commits* deben permitir ver la evolución del trabajo, tanto grupal como individual.  
+​Muy importante:​ **los repositorios creados deben ser privados, solo visibles para los integrantes del grupo y, solo en caso de que se lo solicite específicamente, para la cátedra.**
+
+# Material a entregar {#material-a-entregar}
+
+Cada grupo deberá subir al **Campus UNICAMENTE UN ARCHIVO COMPACTADO** conteniendo:
+
+- El **código fuente** de la aplicación:  
+  * Utilizando la misma estructura Maven vista en clase.  
+  * Con una correcta separación de las clases en los módulos *api*, *client* y *server*  
+  * **No se deben entregar los binarios.** Recordar de ejecutar el comando ./mvnw clean antes de la entrega.  
+- Un **README.md** indicando cómo realizar el build, cómo crear un ambiente con varios nodos y cómo correr cada uno de los clientes (indicando todos los parámetros posibles con ejemplos de invocación)  
+- El directorio oculto .git/ donde se encuentra la historia de commits y modificaciones. Recordar que la descarga desde github.com no incluye el directorio .git/.  
+- El **informe** ya mencionado en un archivo **Informe.pdf** ubicado en el directorio **doc/ dentro de la raíz del repositorio.** Incluir una carátula indicando todos los integrantes del grupo.
+
+	No incluir los archivos CSV provistos por la cátedra.
+
+# Corrección {#corrección}
+
+**El trabajo no se considerará aprobado si:**
+
+- No se entregó el trabajo práctico en tiempo y forma  
+- No se entrega alguno de los materiales solicitados en la sección anterior  
+- El código no compila utilizando Maven en la consola (de acuerdo a lo especificado en el **README.md** escrito por el equipo)  
+- El cluster no inicia cuando se siguen los pasos del mismo **README.md**.  
+- Los clientes no corren al seguir los pasos del **README.md.**  
+- La entrega contiene un único *​commit* que consista en la totalidad del código a entregar.
+
+**Si nada de esto se cumple, se procederá a la corrección donde se tomará en cuenta:**
+
+- Que los procesos y *queries* funcionen correctamente según las especificaciones dadas  
+- El resultado de las pruebas y lo discutido en el coloquio  
+- La aplicación de los temas vistos en clase: Concurrencia y Hazelcast  
+- La modularización, diseño, testeo y reutilización de código  
+- El contenido y desarrollo del informe
+
+# Cronograma {#cronograma}
+
+- **Presentación del Enunciado: miércoles 28/10**  
+- **Entrega del trabajo: Estará disponible hasta el jueves 12/11 a las 23:59**  la actividad "TPE 2" localizada en la sección Contenido / Evaluaciones. En la misma deberán cargar el archivo compactado.  
+- **El día del coloquio será el miércoles 18/11**  
+- **El día del recuperatorio será el miércoles 25/11**  
+- **No se aceptarán entregas pasado el día y horario establecido como límite**
+
+# Dudas sobre el TPE {#dudas-sobre-el-tpe}
+
+Las mismas deben volcarse en los **Debates** del Campus ITBA​.
+
+# Recomendaciones {#recomendaciones}
+
+- Para el parseo de argumentos del cliente como \-Dareas consultar [java.lang.System\#getProperty(java.lang.String)](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/System.html#getProperty\(java.lang.String\))  
+- Para la escritura de archivos .csv consultar [java.nio.file.Files.write](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Files.html#write\(java.nio.file.Path,byte[],java.nio.file.OpenOption...\))  
+- Para la lectura de archivos .csv consultar [java.nio.file.Files.lines](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Files.html#lines\(java.nio.file.Path\))  
+- Para el manejo de números decimales: [java.text.DecimalFormat](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/text/DecimalFormat.html) y [java.math.RoundingMode.DOWN](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/math/RoundingMode.html)  
+- Para el manejo de fechas: [java.time.format.DateTimeFormatter](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/format/DateTimeFormatter.html)  
+- Para obtener el día de la semana de una fecha: [java.time.LocalDate\#getDayOfWeek()](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/LocalDate.html#getDayOfWeek\(\))
+
+[^1]:  [https\://es.wikipedia.org/wiki/Ferrocarriles\_Federales\_Suizos](https://es.wikipedia.org/wiki/Ferrocarriles_Federales_Suizos)  
+
+
+[^2]:  [https\://es.wikipedia.org/wiki/Infrabel](https://es.wikipedia.org/wiki/Infrabel)
+
+[image1]: <imagen de portada omitida en esta copia; ver el original>

@@ -128,3 +128,7 @@ El dataset BIXI Montréal tiene una fila por viaje con `startStation`, `startDat
 Una clase usada como **clave** de emisión, como `StationPair`, necesita `DataSerializable` y constructor sin parámetros porque viaja por la red, y `equals`/`hashCode` porque se compara con otras claves. [HZ-T03, p. 27] [HZ-T03, p. 28]
 
 Los enlaces a ambos templates se preservaron sin descargar su contenido. [HZ-R02] [HZ-R03]
+
+### TPE2
+
+El segundo trabajo práctico especial aplica este modelo a servicios de trenes de Suiza y Bélgica, con seis queries resueltas con uno o más jobs sobre Hazelcast 3.8.6. [HZ-E01] Ver [TPE2: servicios de trenes](tpe2-servicios-de-trenes.md).

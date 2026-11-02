@@ -87,6 +87,16 @@ Definiciones breves de la primera unidad. Los enlaces llevan al apunte temático
 - **Reducer:** transforma todos los valores emitidos para una clave en un valor final; Hazelcast crea uno por clave mediante una factory. [HZ-T02, p. 12] [HZ-T02, p. 15]
 - **Sort/shuffle:** etapa provista por el framework que agrupa por clave los valores emitidos y los envía al reducer correspondiente. [HZ-T02, p. 11]
 
+## TPE2: servicios de trenes
+
+- **Cuadrante (TPE2):** celda de una grilla de q grados de lado; para una coordenada es (⌊lat / q⌋, ⌊lon / q⌋). [HZ-E01] Véase [TPE2: servicios de trenes](temas/tpe2-servicios-de-trenes.md#query-4-top-n-estaciones-por-demora-media-de-llegada-por-cuadrante).
+- **Demora media de llegada:** suma de las demoras de llegada de una estación, incluidos adelantos y ceros, dividida por su cantidad de servicios. [HZ-E01]
+- **Demora neta:** demora de salida menos demora de llegada de un servicio en una estación. [HZ-E01]
+- **Efecto bola de nieve:** suma, entre paradas consecutivas de un tren, de la demora de llegada a la siguiente menos la demora de salida de la anterior. [HZ-E01]
+- **Fecha operativa:** fecha a la que pertenece el servicio de un tren (`fecha` en Suiza, `DATDEP` en Bélgica). [HZ-E01]
+- **Salida demorada:** servicio cuya demora de salida es mayor que cero. [HZ-E01]
+- **YTD (*year to date*):** acumulado desde enero hasta el mes indicado, inclusive; se reinicia cada año. [HZ-E01]
+
 ## APIs alternativas
 
 - **Batch loader:** mecanismo de GraphQL que agrupa los pedidos a un campo y los resuelve en un único llamado con N elementos. [API-T02, p. 21]

@@ -1,6 +1,6 @@
 # Wiki de la materia
 
-Este es el índice del conocimiento canónico compilado de Programación de Objetos Distribuidos. El material incorporado cubre programación concurrente con Java, fundamentos de sistemas distribuidos, gRPC, Protocol Buffers, streaming, el TPE1 de gestión de equipajes, almacenamiento distribuido con Hazelcast, MapReduce y estilos alternativos de API.
+Este es el índice del conocimiento canónico compilado de Programación de Objetos Distribuidos. El material incorporado cubre programación concurrente con Java, fundamentos de sistemas distribuidos, gRPC, Protocol Buffers, streaming, el TPE1 de gestión de equipajes, almacenamiento distribuido con Hazelcast, MapReduce, el TPE2 de servicios de trenes y estilos alternativos de API.
 
 ## Navegación
 
@@ -20,6 +20,7 @@ Este es el índice del conocimiento canónico compilado de Programación de Obje
 - [Almacenamiento distribuido y HDFS](temas/almacenamiento-distribuido-y-hdfs.md): particionado, replicación, consistencia, elasticidad, tolerancia a fallos y HDFS.
 - [Hazelcast: cluster, configuración y estructuras](temas/hazelcast-cluster-y-estructuras.md): nodos, coordinador, 271 particiones, réplicas, configuración XML y Java, split brain, serialización y estructuras distribuidas.
 - [MapReduce con Hazelcast](temas/mapreduce-con-hazelcast.md): modelo map/sort/reduce, API de jobs, key predicate, combiner, collator, `HazelcastInstanceAware` y ejercicios.
+- [TPE2: servicios de trenes](temas/tpe2-servicios-de-trenes.md): datasets de Suiza y Bélgica, las seis queries MapReduce, invocación, informe, entrega y cronograma.
 - [APIs alternativas](temas/apis-alternativas.md): tira de bytes, SOAP/WSDL, REST/HATEOAS, GraphQL con resolvers y batch loaders, y APIs de eventos.
 
 ## Material incorporado
@@ -53,8 +54,14 @@ Este es el índice del conocimiento canónico compilado de Programación de Obje
 | `HZ-R01` | Referencias | Repositorio `hz-store` | Enlace del ejercicio 4 de Hazelcast, sin descargar. |
 | `HZ-R02` | Referencias | Repositorio `word-count` | Template de MapReduce I, sin descargar. |
 | `HZ-R03` | Referencias | Repositorio `bike-rentals` | Template de MapReduce II, sin descargar. |
+| `HZ-E01` | Entrega | TPE2: servicios de trenes | Consigna evaluada en Markdown, con seis queries MapReduce sobre Hazelcast; sin páginas. |
+| `HZ-D01` | Dataset | `stationsCH(in).csv` | 1539 estaciones de Suiza; la copia tiene las coordenadas dañadas. |
+| `HZ-D02` | Dataset | `stationsBE(in).csv` | 538 estaciones de Bélgica. |
+| `HZ-R04` | Referencias | Repositorio `tpe2-26Q2-g0` | Enlace al template del TPE2, sin descargar. |
 | `API-T01` | Teoría | APIs alternativas 1 | Tira de bytes, SOAP y REST sobre un servicio común, 63 páginas. |
 | `API-T02` | Teoría | APIs alternativas 2 | GraphQL y APIs de eventos, 35 páginas. |
 | `API-C01` | Código de apoyo | Proyecto `graphql-intro` | Spring for GraphQL con esquema, DAOs en memoria y controladores para los ejercicios. |
 
 Los PDFs están disponibles como originales preservados y como texto extraído página por página. Los ZIP se preservan como originales y tienen una copia descomprimida regenerable en `material/extraido/` para permitir búsquedas sobre el código. Los listados y archivos de enlaces se mantienen como fuentes textuales oficiales; su contenido remoto no fue incorporado. El archivo `hazelcast.xml` ya es buscable como texto. El jar de Hazelcast es una biblioteca binaria: se preserva con su checksum, pero no tiene derivado. La copia descomprimida de `graphql-intro` omite el wrapper de Maven y el `.gitignore` del proyecto.
+
+La consigna del TPE2 es un Markdown con la foto de portada embebida en base64; `material/extraido/HZ-E01.txt` es una copia sin esa imagen, para que las búsquedas no devuelvan ruido. Los CSV de estaciones del TPE2 se versionan porque son chicos. Los ZIP de servicios (`trainsCH.csv.zip`, `trainsBE.csv.zip`) no se versionan ni se catalogan: viven en `laboratorio/tpe2/data/`, ignorado por git, y `laboratorio/tpe2/README.md` registra su procedencia y sus checksums.
