@@ -16,3 +16,16 @@ GR-S01	solucion	Solución del trabajo práctico: gRPC Communication Patterns	mat
 GR-P02	practica	Trabajo práctico: gRPC III	material/catedra/practica/TP - gRPC - III.pdf	5	2026	vigente	TP - gRPC - III.pdf
 GR-E01	entrega	Trabajo Práctico Especial 1: Gestión de Equipajes en Aeropuertos	material/catedra/practica/TPE1.pdf	29	2026	vigente	TPE1.pdf
 GR-R01	referencias	Repositorios provistos por la cátedra para gRPC	material/catedra/referencias/links_provistos_por_la_cátedra.md		2026	vigente	links_provistos_por_la_cátedra.md
+SD-T01	teoria	Sistemas distribuidos: límites de la RDBMS, BI, big data y RM-ODP	material/catedra/teoria/Sistemas Distribuidos.-2.pdf	62	2026	vigente	Sistemas Distribuidos.-2.pdf
+HZ-T01	teoria	Store distribuido: particionado, replicación, HDFS y Hazelcast	material/catedra/teoria/Store Distribuido.pdf	83	2026	vigente	Store Distribuido.pdf
+HZ-G01	guia	Hazelcast: configuración programática en Java	material/catedra/practica/Hazelcast Configuración Java(1).pdf	6	2026	vigente	Hazelcast Configuración Java(1).pdf
+HZ-C01	codigo-apoyo	Configuración hazelcast.xml provista para los ejercicios	material/catedra/practica/hazelcast.xml		2026	vigente	hazelcast.xml
+HZ-C02	herramienta	Distribución hazelcast-all 3.8.6 provista por la cátedra	material/catedra/practica/hazelcast-all-3.8.6.jar		2026	vigente	hazelcast-all-3.8.6.jar
+HZ-T02	teoria	Hazelcast: MapReduce I	material/catedra/teoria/Hazelcast - Map Reduce I.pdf	26	2026	vigente	Hazelcast - Map Reduce I.pdf
+HZ-T03	teoria	Hazelcast: MapReduce II	material/catedra/teoria/Hazelcast - Map Reduce II.pdf	37	2026	vigente	Hazelcast - Map Reduce II.pdf
+HZ-R01	referencias	Repositorio del ejercicio 4 de Hazelcast (hz-store)	material/catedra/referencias/linkej4.txt		2026	vigente	linkej4.txt
+HZ-R02	referencias	Repositorio template de MapReduce word-count	material/catedra/referencias/linkwordcount.txt		2026	vigente	linkwordcount.txt
+HZ-R03	referencias	Repositorio template de MapReduce bike-rentals	material/catedra/referencias/linkbikerentals.txt		2026	vigente	linkbikerentals.txt
+API-T01	teoria	APIs alternativas 1: tira de bytes, SOAP y REST	material/catedra/teoria/API - Alternativas 1.pdf	63	2026	vigente	API - Alternativas 1.pdf
+API-T02	teoria	APIs alternativas 2: GraphQL y APIs de eventos	material/catedra/teoria/API - Alternativas 2.pdf	35	2026	vigente	API - Alternativas 2.pdf
+API-C01	codigo-apoyo	Proyecto de apoyo: graphql-intro	material/catedra/practica/graphql-intro.zip		2026	vigente	graphql-intro.zip

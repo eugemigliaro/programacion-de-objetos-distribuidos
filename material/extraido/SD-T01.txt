@@ -1,0 +1,712 @@
+FUENTE: SD-T01
+TITULO: Sistemas distribuidos: límites de la RDBMS, BI, big data y RM-ODP
+ORIGINAL: material/catedra/teoria/Sistemas Distribuidos.-2.pdf
+PAGINAS: 62
+
+===== PAGINA 1 =====
+
+Sistemas Distribuidos
+
+===== PAGINA 2 =====
+
+                           Cliente/Servidor
+El sistema que vimos hasta ahora donde tenemos un cliente y un servidor, no es
+la norma.
+Es extremadamente raro que estos sean los únicos dos componentes
+
+===== PAGINA 3 =====
+
+                           Cliente/Servidor
+                            RDBMS / Logs
+En general se tiene separada la persistencia.
+Y para la persistencia se tiene dos elementos mínimos
+ » Una base de datos
+ » Los archivos de logs
+
+===== PAGINA 4 =====
+
+RDBMS
+
+===== PAGINA 5 =====
+
+                       ¿Qué es una RDBMS?
+
+  Un RDBMS es un
+ programa/servicio
+ que permite crear,
+     modiﬁcar y
+administrar bases de
+datos relacionales y
+   la información
+  contenida en las
+       mismas.
+
+===== PAGINA 6 =====
+
+                Beneﬁcios de los RDBMS
+Modelo Relacional:
+
+
+
+
+»   Guarda la información como un "conjunto de relaciones" representadas por tablas
+»   Una tabla contiene ﬁlas y columnas. Cada ﬁla representa a un registro de la tabla.
+    Cada columna un atributo de dicho registro.
+»   Cada ﬁla puede tener una clave que lo identiﬁca llamado primary key (que puede
+    ser compuesta por varios atributos).
+»   Las relaciones entre tablas se dan por atributos comunes (foreign key).
+»   Se pueden validar relaciones y unicidad mediantes las constrains sobre las keys.
+
+===== PAGINA 7 =====
+
+              Beneﬁcios de los RDBMS
+Un esquema es la implementación física del modelo de datos y da la
+posibilidad de deﬁnir:
+➢ Tipos de datos para cada atributo de una tabla.
+   ○ Constraints: para restringir los datos ingresados al sistema
+       mediante validaciones de unicidad y consistencia.
+   ○ Permite optimizaciones de guardado.
+➢ Índices: para optimizar la búsqueda y ﬁltrado por ciertos atributos de
+  las tablas
+
+===== PAGINA 8 =====
+
+              Beneﬁcios de los RDBMS
+Transacciones ACID: Permite que varias operaciones como una operación
+lógica que cumple:
+ » Atomicidad: indica que cada transacción es todo o nada. No se persisten
+   cambios por la mitad.
+ » Consistencia: Toda información escrita es válida de acuerdo a todas las
+   restricciones deﬁnidas.
+ » Aislamiento: Ninguna transacción será afectada por transacciones que
+   se realizan de manera concurrente.
+ » Durabilidad: indica que una vez que se escribió la información, la misma
+   es permanente y lecturas posteriores retornarán el nuevo dato escrito.
+
+===== PAGINA 9 =====
+
+              SQL
+
+
+SQL (Structured Query Language) es un lenguaje
+ de dominio especíﬁco utilizado para manejar y
+ consultar información disponible en bases de
+datos relacionales (RDBMS), o para procesar en
+     sistema de procesamiento de streams
+             relacionales (RDBMS).
+
+===== PAGINA 10 =====
+
+                              SQL
+➢ Originalmente basado en el álgebra relacional. SQL consiste de 3
+  sub lenguajes DDL (data deﬁnition language), DML (data
+  manipulation language) y DCL (data control language), además de
+  un lenguaje de consulta y la posibilidad de ejecutar bloques
+  procedurales.
+➢ Fue uno de los primeros lenguajes comerciales para el modelo
+  relacional de Edgar F. Codd. Se convirtió en el estándar de la ANSI
+  y la ISO para dicho modelo.
+➢ Eventualmente se volvió sinónimo de RDBMS.
+
+===== PAGINA 11 =====
+
+                   SQL Statements
+
+                   DDL                                     Query
+CREATE TABLE Book(                          SELECT Book.isbn AS Title,
+ isbn INTEGER,                                     count(*) AS Authors
+ title VARCHAR(50),                          FROM Book
+ publication DATE NOT NULL,                  JOIN Book_author
+ PRIMARY KEY (isbn)                            ON Book.isbn = Book_author.isbn
+);                                           GROUP BY Book.title;
+ALTER TABLE Book ADD type VARCHAR(3);
+DROP TABLE Book;
+
+
+
+                                      DML
+INSERT INTO Book (isbn, title)    VALUES (978-1501142970, 'IT');
+UPDATE Book   SET isbn = 'IT: a Novel'   WHERE isbn = ' 978-1501142970;
+DELETE FROM Book   WHERE isbn =   978-1501142970;
+
+===== PAGINA 12 =====
+
+                                Beneﬁcios
+Durante unas décadas el sistema cliente/servidor con una RDBMs se lo
+consideraba el sistema “norma”.
+Mientras los requerimientos del sistema se mantengan dentro del esquema
+“book keeping” esta solución es “mágica” y “one tool ﬁts all”.
+Lo cual lo hace simple de aprender, usar y mantener.
+
+===== PAGINA 13 =====
+
+                        Diversos Problemas
+El gran problema es que aparecieron nuevas necesidades, y se intentó (forzó)
+que este mismo modelo las respondiera.
+Lo que trajo diversos problemas debido a que no estaba utilizando la
+herramienta correcta.
+Lo cual eventualmente dio origen a otras herramientas que resolvieran mejor
+esos problemas.
+
+===== PAGINA 14 =====
+
+Problema 1
+Crecimiento Orgánico del Sistema
+
+===== PAGINA 15 =====
+
+Problemas de escala con una RDBMS
+
+
+             Lanzamiento inicial:
+  Se pasa de un “entorno de desarrollo” en una
+  máquina a un servidor con una base de datos
+    externa con un esquema “bien deﬁnido”,
+                 normalizado .
+
+===== PAGINA 16 =====
+
+Problemas de escala con una RDBMS
+
+         El servicio se vuelve popular:
+          Tenemos muchas Lecturas!!!
+
+     Agregamos un memcache para las
+         consultas más comunes.
+
+   Por lo que las lecturas dejan de cumplir
+     ACID. El cache debe ser expirado.
+
+                   Alternativa es agregar réplicas, que requiere
+                     mantenimiento y mayor infraestructura.
+
+===== PAGINA 17 =====
+
+Problemas de escala con una RDBMS
+
+       El servicio se vuelve aún popular:
+       Tenemos muchas Escrituras!!!
+
+  Escalar la base de datos verticalmente,
+
+
+     Debemos gastar plata en mejores
+            componentes.
+
+===== PAGINA 18 =====
+
+Problemas de escala con una RDBMS
+
+   Nuevas features generan queries más
+               complejas:
+   Demasiados Joins!!!! lecturas lentas!!!
+     Hay que desnormalizar la base de
+                 datos..
+
+    Hay que mantener la redundancia y
+        gastar en más capacidad.
+     Actualizaciones más complejas
+
+===== PAGINA 19 =====
+
+Problemas de escala con una RDBMS
+
+                Mucho volumen
+    las escrituras son cada vez más lentas
+
+   Eliminar triggers e índices secundarios.
+
+===== PAGINA 20 =====
+
+      ¿Cuál es el problema de los RDBMS?
+»   Son demasiados rígidos para los nuevos escenarios
+»   La idea que es una herramienta para todo no aplica más.
+»   No es ideal para guardar data no estructurada.
+»   Difícil de escalar y mantener millones de registros.
+»   Las estructuras de datos utilizadas por estos sistemas
+    están optimizadas para lecturas utilizando poca cantidad
+    de memoria.
+
+===== PAGINA 21 =====
+
+Problema 2
+BI - Queries Análiticas
+
+===== PAGINA 22 =====
+
+                      BI - Nuevas Preguntas
+A partir de la información que se
+encuentra en la base de datos
+relacional, y algunas otras
+fuentes, las empresas empezaron
+a notar que se puede generar
+“nuevo conocimiento” y a partir
+del mismo “nuevas decisiones y
+acciones”.
+Pero eso hizo que surgieran
+nuevas preguntas
+
+===== PAGINA 23 =====
+
+                        BI - Nuevas Preguntas
+Muchas de estas preguntas
+generalmente comienzan con
+
+
+ » ¿Cuántos (elementos) … ?
+ » ¿Cuánto (cuesta) ...?
+ » ¿Cuál es el promedio (o media u
+   otra medida estadística) ...?
+
+
+Y esos valores se calculan a partir de la
+combinación de un conjunto de
+dimensiones
+
+===== PAGINA 24 =====
+
+                      BI - Nuevos Problemas
+El tipo de preguntas se responden a partir de queries de agregación.
+Aunque las RDBMS tienen agregaciones la performance de las mismas
+sufre porque:
+ » El modelo por ﬁla no es el más óptimo para agregar.
+ » Al agregar por dimensiones no indizadas se requiere full scans.
+ » Las operaciones requieren más tiempo para procesar.
+ » Si tiene locks (ya sea por tabla o ﬁla) los tiene que mantener por más
+   tiempo.
+ » Todo esto afecta no solo a la query lanzada, sino a las que corran
+   concurrentemente en la base de datos.
+
+===== PAGINA 25 =====
+
+            BI - Online Analytical Processing
+
+Los OLAPs son softwares cuyo modelo permiten mantener la
+información por las dimensiones y agregar de manera fácil
+
+===== PAGINA 26 =====
+
+                                   BI - OLAP
+Conceptualmente se genera un “cubo”
+con la información dividida a partir de la
+granularidad de las dimensiones que se
+quieran utilizar.
+Y a partir de acciones:
+ »   Drill down: agregar
+ »   Roll up: desagregar
+ »   Slice: Fijar una dimensión.
+ »   Dice: Fijar más de una dimensión
+ »   Pivot: Rotar la selección de
+     dimensiones
+Se obtienen las respuestas esperadas.
+
+===== PAGINA 27 =====
+
+                   BI - Data Warehouses
+Las organizaciones requieren llevar la información desde los RDBMs a
+los modelos OLAPs.
+Para lo cual se requiere un pipeline de operaciones y transformaciones.
+Para las mismas las organizaciones cuentan con un Data Warehouse
+que es un sistema que permite realizar las tareas básicas:
+  » Obtención/Extracción (E)
+  » Transformación (T)
+  » Carga (L)
+Esto puede pasar en varios momentos y con stores intermedios para
+llegar a los modelos ﬁnales.
+
+===== PAGINA 28 =====
+
+BI - Data Warehouses
+
+===== PAGINA 29 =====
+
+                             BI - DW / OLAP
+Este tipo de modelo tiene ciertas características:
+ » Los procesos de ETL se realizan de manera Batch Periódicamente.
+ » Generalmente estos procesos llevan mucho tiempo en terminar su tarea.
+ » Por una cuestión de espacio no se guarda la información histórica
+   granular sino que se agrega al mínimo necesario para los modelos por
+   los OLAPs.
+ » Por esta razón los modelos y preguntas a realizar son predeﬁnidas y
+   tienen una cierta rigidez.
+ » Si quiero hacer nuevas preguntas sobre la data del año pasado no puedo
+
+===== PAGINA 30 =====
+
+Problema 3
+Big Data
+
+===== PAGINA 31 =====
+
+                      ¿Cómo se deﬁne Big Data?
+
+Jon Bruner, Editor-at-Large, O’Reilly Media
+“Big Data is the result of collecting information at its most granular level —
+it’s what you get when you instrument a system and keep all of the data that
+your instrumentation is able to gather.”
+Ryan Swanstrom, Data Science Blogger, Data Science 101
+“Big data used to mean data that a single machine was unable to handle.
+Now big data has become a buzzword to mean anything related to data
+analytics or visualization.”
+http://datascience.berkeley.edu/what-is-big-data/
+
+===== PAGINA 32 =====
+
+                   ¿Cómo se deﬁne Big Data?
+En 1997 “del problema de Big Data” en un paper de la NASA escrito
+por Michael Cox and David Ellsworth:
+
+
+“Visualization provides an interesting challenge for computer systems:
+   data sets are generally quite large, taxing the capacities of main
+               memory, local disk, and even remote disk.
+                 We call this the problem of big data.
+ When data sets do not ﬁt in main memory (in core), or when they do
+not ﬁt even on local disk, the most common solution is to acquire more
+                               resources.”
+
+===== PAGINA 33 =====
+
+                   ¿Cómo se deﬁne Big Data?
+En 2001 Doug Laney (de Gartner) “creó” la deﬁnición de las 3 Vs.
+
+         Volumen               Variedad                Velocidad
+       La cantidad de     Aparecen nuevos tipos La velocidad con
+       datos crece de     de datos, que deben ser que los datos se
+           manera            analizados que no     generan crece
+        geométrica.          cumplen con una
+                              estructura “ﬁja”.
+                          Son semi estructurados
+                            o no estructurados
+
+===== PAGINA 34 =====
+
+                                              Volumen
+»   2003: Se generaron 5 exabyte.
+»   2004: Se consolidan las primeras redes
+    sociales.
+»   2006: Se generan 161 exabytes. Se predice
+    que la cantidad se duplicará cada 18
+    meses. (Ley de Moore)
+»   2007: Primer iPhone. Infraestructuras en la
+    Nube Pública se vuelve de uso común.
+»   2013-2014: En este período se crean más
+    datos que en toda la historia de la
+    humanidad
+»   2015: En Agosto Mil millones de personas
+    usan Facebook en un día en promedio
+
+===== PAGINA 35 =====
+
+                                Velocidad
+Durante 2015 se midieron estas estadísticas:
+
+
+ » Los usuarios de Facebook enviaban 31 millones de mensajes y ven 2.7
+   millones de videos por minuto.
+ » Cada minuto se subian hasta 300 horas
+ » Se sacaron 1 trillón de fotos de las cuales mil millones se compartieron
+   de manera online
+ » En promedio se enviaban 6000 tweets por segundo
+
+===== PAGINA 36 =====
+
+                                 Variedad
+
+Los datos pueden venir en varios formatos:
+Estructurados       Semi estructurados       Desestructurados
+La información      Generalmente             La información no tiene
+tiene un esquema    Text-based, tienen un    un esquema aparente y
+ﬁjo que puede       “esquema” que se         puede no ser textual.
+replicarse          puede cumplir en su      Ejemplos:
+fácilmente en una   totalidad o no.
+RDBMs                                        Mails. Archivos de
+                    Ejemplos JSON y
+                                             procesadores de texto o
+                    XML.
+                                             pdfs. Imágenes.
+
+===== PAGINA 37 =====
+
+                     3Vs - Nuevas fuentes
+Las organizaciones comenzaron a tomar datos
+generados por fuera de sus sistemas. Por lo cual
+“máquinas” y “personas” son nuevas fuentes de
+información:
+Datos                Máquinas            Personas
+Organizacionales      »   Sensores         »   Redes
+ »   Stocks.          »   Satélites            sociales
+ »   Compras y        »   Logs             »   Fotos
+     ventas           »   IOT              »   Videos.
+ »   Transacciones         ● bandas        »   Comentarios
+ »   Datos de                  deportivas
+     usuarios              ● Casas
+                               inteligentes.        FitBit can produce several gigabytes a day
+
+===== PAGINA 38 =====
+
+                        Big Data - Problemas
+Por “deﬁnición” trabajar con Big Data excede las capacidades de “una máquina”,
+se requieren implementar nuevas estrategias para poder resolver los problemas
+que surgen a cada paso de la cadena de procesamiento:
+ » Adquisición: tenemos que soportar tanto el volumen, como la velocidad
+     dando soporte a la variedad de fuentes. Y probablemente buffereando para
+     evitar problemas de procesamiento
+ » Procesamiento: Realizar el procesamiento dentro de un tiempo que sea útil
+     para la organización. Tal vez particionando la operación de acuerdo a
+     prioridad y complejidad.
+ » Guardado: se deben utilizar estrategias de guardado acordes a los datos y
+     necesidades de respuesta.
+ » Vista: tener formas de mostrar la información que sea útil para los usuarios
+     del sistema.
+
+===== PAGINA 39 =====
+
+Sistemas Distribuidos
+
+===== PAGINA 40 =====
+
+                       Sistemas Distribuidos
+Todos estos problemas que se fueron mencionando llevan a un sinceramiento
+de que el sistema en Base y Server y el escalamiento “poniendo ﬁerros más
+grandes” (escalamiento vertical) tiene un límite.
+Entonces ahora es más común o simple buscar sistemas que escalan de
+manera horizontal.
+
+===== PAGINA 41 =====
+
+              Sistema Distribuido
+ Es un sistema computacional cuyos componentes están
+  distribuidos en diferentes computadoras (o elementos
+   computacionales), que se conectan y comunican por
+              medio de mensajes de una red.
+Este sistema se presenta ante sus usuarios como un único
+                   sistema coherente.
+
+===== PAGINA 42 =====
+
+                  Sistema Distribuido - Objetivo
+
+Las componentes del sistema dividen una tarea coordinando sus recursos para
+     completarla de manera más eﬁciente que si se ejecutara en una sola
+                              computadora.
+
+===== PAGINA 43 =====
+
+               Sistema Distribuido - Tipos de tareas
+Las tareas a ejecutar serán particionadas y repartidas entre las diferentes partes
+del sistema.
+Las tareas se pueden “clasiﬁcar” en 3 tipos:
+         Almacenamiento           Procesamiento           Responsabilidades
+            Para guardar          Para subdividir una      Dividir una tarea en
+            elementos o             tarea y obtener         diferentes partes
+           cantidades de         resultados parciales           “lógicas”
+         elementos que no           de cada subset         probablemente con
+        entrarían en un nodo                               sentido semántico
+                                                             independiente
+
+===== PAGINA 44 =====
+
+             Sistema Distribuido - Características
+
+➢   Hay más de un elemento computacional llamado nodo que pueden ser
+    computadoras, máquinas virtuales, dispositivos, etc.
+➢   Cada uno de los elementos es autónomo y débilmente acoplado o sea tiene
+    TODO para operar por sí solo.
+➢   Cada proceso ejecutado en un nodo tiene su propio espacio de
+    direccionamiento.
+➢   Las computadoras se comunican entre sí por una red.
+➢   Cada nodo ofrece acceso a sus recursos a través de "SERVICIOS", ya sea a
+    otros nodos o a clientes ﬁnales.
+
+===== PAGINA 45 =====
+
+                 Sistema Distribuido - Problemas
+
+Los sistemas distribuidos traen beneﬁcios pero al mismo tiempo traen
+problemas inherentes a la manera en la cual se distribuye.
+Algunos de estos problemas puede ser fallas en:
+➢   Alguno de los componentes lógicos del sistema: bugs, falta de memoria,
+    etc.
+➢   Los nodos del sistema: ya sea en hardware o recursos.
+➢   La comunicación por red: los nodos andan pero no pueden comunicarse
+    entre ellos.
+➢   La coordinación entre las tareas y/o nodos: se pierden mensajes, se
+    distribuyen mal las tareas, etc.
+
+===== PAGINA 46 =====
+
+Modelo de referencia
+
+===== PAGINA 47 =====
+
+                     Modelo de referencia
+
+La ISO deﬁnió un modelo de referencia para procesamiento abierto
+                    distribuido (RM-ODP).
+ El mismo recopila una serie de conceptos, condiciones y buenas
+prácticas, en su mayoría pre existentes, que intentan estandarizar el
+               desarrollo de aplicaciones distribuidas.
+La intención es simpliﬁcar la deﬁnición de sistemas que suelen ser
+                   inherentemente complejos.
+
+===== PAGINA 48 =====
+
+                   Modelo de referencia - Partes
+
+El modelo tiene 4 elementos fundamentales para especiﬁcar el sistema:
+
+
+➢   Se especiﬁca a partir de un modelado de objetos.
+➢   Se especiﬁca a partir de "viewpoints" separados pero interrelacionados.
+➢   Tiene que proveer una serie de transparencias.
+➢   Tiene que tener un framework para medir la conformidad del sistema mediante la
+    realización de pruebas (manuales o automáticas) y/o revisión de cumplimiento de
+    requisitos.
+
+===== PAGINA 49 =====
+
+              Modelo de referencia - Modelado de Objetos
+
+El modelo utiliza el modelado de los sistemas mediante el análisis y diseño orientado a
+objetos.
+Utiliza este paradigma de programación porque entiende que es el más natural al
+describir una serie de elementos independientes que interactúan entre sí para realizar
+las tareas y/o operaciones del sistema.
+
+===== PAGINA 50 =====
+
+                     Modelo de referencia - Viewpoints
+
+Los sistemas tienden a ser tan complejos y hay tantos involucrados que una
+descripción única sería larga y poco útil.
+Entonces el modelo indica que al sistema se lo puede describir mediante “diferentes
+viewpoints”. Cada uno de los viewpoints describe desde cierto objetivo y con una
+audiencia especíﬁca en mente.
+La forma de implementar cada viewpoint no está determinada, se puede hacer
+documentos de texto, gráﬁcos, diagramas, etc.
+Muchos tienen cierta relación con los diagramas UML, así que son naturalmente
+utilizados para esto.
+
+===== PAGINA 51 =====
+
+                     Modelo de referencia - Viewpoints
+                                       propósito
+
+
+
+
+semántica
+                                                           descomposición
+                                                           funcional
+
+
+
+
+   mecanismos                                      selección de
+   de distribución                                 tecnologías
+
+===== PAGINA 52 =====
+
+                Modelo de referencia - Transparencias
+
+RM-ODP deﬁne una serie de transparencias cuyo objetivo es reducir y/o simpliﬁcar los
+potenciales problemas inherentes a la comunicación de sistemas distribuidos.
+Se dice que una transparencia se “cumple” si la misma queda oculta (o invisibilizada) para el
+cliente del sistema.
+Si todas las transparencias se cumplen (lo cual es un ideal difícil), quedaría oculto el hecho
+que estamos realizando una comunicación entre sistemas distribuidos.
+
+===== PAGINA 53 =====
+
+      Modelo de referencia - Transparencias
+
+                               ACCESO
+Los usuarios del sistema deben acceder a los componentes del mismo de
+                         una manera uniforme.
+Esconde la complejidad de invocar servicios remotos y la heterogeneidad
+                           de representación.
+
+                               FALLAS
+ Los errores, reintentos y recoveries deben pasar desapercibidos por el
+                                 usuario.
+
+===== PAGINA 54 =====
+
+      Modelo de referencia - Transparencias
+
+                              UBICACIÓN
+   El usuario no debe saber la ubicación física de los componentes del
+                                 sistema.
+Provee un acceso lógico independiente de la ubicación física del servicio.
+
+                              MIGRACIÓN
+ Si un objeto cambia de ubicación entre usos el usuario no debe notarlo.
+
+                             REUBICACIÓN
+ Si un objeto cambia de ubicación mientras se está usando el usuario no
+                             debe notarlo.
+
+===== PAGINA 55 =====
+
+       Modelo de referencia - Transparencias
+
+                             REPLICACIÓN
+Si un componente está replicado en múltiples nodos, para el usuario deben
+                 aparentar ser el mismo componente.
+
+                            TRANSACCIÓN
+    Oculta la interacción de varios objetos para proveer una operación
+                               transaccional.
+
+===== PAGINA 56 =====
+
+                         Sistemas Distribuidos
+Para el trabajo distribuido escalado horizontalmente, todavía queremos mantener
+las transparencias, especialmente la de acceso. Esto signiﬁca trabajar con un
+servicio sin saber (o sabiendo lo menos posible) de que el mismo es distribuido.
+Y hablamos de “sistemas”, porque no es solo una aplicación funcionando
+distribuida (por ejemplo una base NoSql), sino un conjunto de sistemas que
+interactúan para proveer un servicio para el cliente, sin que él mismo sepa de sus
+partes.
+
+===== PAGINA 57 =====
+
+Ejemplos
+
+===== PAGINA 58 =====
+
+                        Sistemas Distribuidos
+Arquitectura de microservicios de Linkedin pre kafka
+
+===== PAGINA 59 =====
+
+           Sistemas Distribuidos
+Stack de
+Hadoop
+
+===== PAGINA 60 =====
+
+                        Sistemas Distribuidos
+Sistema de captura y procesamiento analitico utilizando Twitter como fuente
+
+===== PAGINA 61 =====
+
+             Sistemas Distribuidos
+Stack
+de Flowics
+
+===== PAGINA 62 =====
+
+CREDITS
+Content of the slides:
+ »   POD - ITBA
+Images:
+ »   POD - ITBA
+ »   Or obtained from: commons.wikimedia.org
+Slides theme credit:
+Special thanks to all the people who made and released these awesome
+resources for free:
+ »   Presentation template by SlidesCarnival
+ »   Photographs by Unsplash
+

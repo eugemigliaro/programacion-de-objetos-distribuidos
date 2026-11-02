@@ -44,3 +44,60 @@ Definiciones breves de la primera unidad. Los enlaces llevan al apunte temático
 - **Skeleton:** middleware servidor que interpreta el pedido, deserializa sus parámetros e invoca al servant. [GR-T01, p. 29] [GR-T01, p. 37]
 - **StreamObserver:** interfaz de callbacks que entrega valores con `onNext` y finaliza con `onCompleted` o `onError`. [GR-T01, p. 53]
 - **Stub:** proxy cliente generado para invocar el servicio remoto. [GR-T01, p. 28] [GR-T01, p. 40]
+
+## Sistemas distribuidos y big data
+
+- **3 V:** volumen, velocidad y variedad, la caracterización de big data atribuida a Doug Laney. [SD-T01, p. 33] Véase [Sistemas distribuidos](temas/sistemas-distribuidos-y-big-data.md#problema-3-big-data).
+- **ACID:** atomicidad, consistencia, aislamiento y durabilidad de una transacción. [SD-T01, p. 8]
+- **Data warehouse:** sistema que lleva datos de las RDBMS a modelos OLAP mediante extracción, transformación y carga. [SD-T01, p. 27]
+- **ETL:** extracción, transformación y carga; en el esquema DW/OLAP se ejecuta en batch periódico. [SD-T01, p. 27] [SD-T01, p. 29]
+- **Escalamiento horizontal:** crecer agregando nodos en lugar de máquinas más grandes (escalamiento vertical). [SD-T01, p. 40]
+- **Nodo:** elemento computacional autónomo y débilmente acoplado de un sistema distribuido; ofrece sus recursos mediante servicios. [SD-T01, p. 44]
+- **OLAP:** software que mantiene la información por dimensiones para agregarla fácilmente, conceptualmente como un cubo. [SD-T01, p. 25] [SD-T01, p. 26]
+- **RM-ODP:** modelo de referencia ISO para procesamiento abierto distribuido, basado en objetos, *viewpoints*, transparencias y conformidad. [SD-T01, p. 47] [SD-T01, p. 48]
+- **Transparencia:** propiedad que se cumple cuando un problema propio de la distribución queda oculto para el cliente. [SD-T01, p. 52]
+- **Viewpoint:** descripción parcial de un sistema con objetivo y audiencia propios. [SD-T01, p. 50]
+
+## Almacenamiento distribuido y Hazelcast
+
+- **Consistencia eventual:** si no hay escrituras nuevas, pasado cierto tiempo todas las lecturas reflejan el último valor escrito. [HZ-T01, p. 11]
+- **Consistencia estricta:** toda escritura queda disponible inmediatamente para todos, con orden global de las operaciones. [HZ-T01, p. 11]
+- **Coordinador (Hazelcast):** miembro más antiguo del cluster; mantiene y distribuye la tabla de particiones. [HZ-T01, p. 33] [HZ-T01, p. 34]
+- **`DataSerializable`:** interfaz de Hazelcast que serializa con `writeData` y `readData`; la cátedra la recomienda junto con `IdentifiedDataSerializable`. [HZ-T01, p. 70] [HZ-T01, p. 71]
+- **Elasticidad:** capacidad de un cluster de cambiar su cantidad de nodos sin quedar completamente offline. [HZ-T01, p. 13]
+- **Entry processor:** procesamiento atómico sobre una entrada de un `IMap`, invocado con `executeOnKey`. [HZ-T01, p. 76]
+- **HDFS:** file system distribuido de Hadoop, basado en GFS, con bloques grandes replicados, un Name Node y Data Nodes. [HZ-T01, p. 17] [HZ-T01, p. 19] [HZ-T01, p. 20] [HZ-T01, p. 22]
+- **Lite member:** nodo Hazelcast que no guarda datos y sirve para lanzar tareas o registrar listeners. [HZ-T01, p. 32]
+- **Particionado:** división de los datos entre los nodos del cluster. [HZ-T01, p. 4] Véase [Almacenamiento distribuido](temas/almacenamiento-distribuido-y-hdfs.md#particionado).
+- **Partición (Hazelcast):** una de las 271 porciones en que se divide cada estructura; se elige con `hash(objeto) % 271`. [HZ-T01, p. 35] [HZ-T01, p. 36]
+- **Réplica (backup):** copia de una partición en otro nodo; en Hazelcast es sincrónica por defecto y puede configurarse asincrónica. [HZ-T01, p. 6] [HZ-T01, p. 39] [HZ-T01, p. 43]
+- **SPOF:** *single point of failure*; el Name Node de HDFS lo era hasta la alta disponibilidad de 3.x. [HZ-T01, p. 23]
+- **Split brain:** división del cluster en dos partes autónomas por una falla de comunicación. [HZ-T01, p. 49]
+
+## MapReduce
+
+- **Collator:** post-procesamiento del resultado final de un job; corre en el cliente. [HZ-T03, p. 15] [HZ-T03, p. 16]
+- **Combiner:** reducción parcial por chunk en el nodo del mapper, que reduce el tráfico hacia los reducers. [HZ-T03, p. 9] [HZ-T03, p. 12]
+- **Data locality:** procesar con los datos locales al nodo y evitar moverlos por la red. [HZ-T02, p. 3]
+- **`JobTracker`:** punto de entrada de la API MapReduce de Hazelcast; crea jobs a partir de un `KeyValueSource`. [HZ-T02, p. 17] [HZ-T02, p. 19]
+- **`KeyPredicate`:** filtro previo que descarta pares por su clave antes del map. [HZ-T03, p. 4]
+- **`KeyValueSource`:** fuente que permite a un job iterar una colección distribuida. [HZ-T02, p. 18]
+- **Mapper:** función que recibe un par clave/valor y emite cero, uno o más pares. [HZ-T02, p. 7]
+- **MapReduce:** modelo de procesamiento paralelo y distribuido basado en `map`, sort/shuffle y `reduce`. [HZ-T02, p. 2] [HZ-T02, p. 5] Véase [MapReduce con Hazelcast](temas/mapreduce-con-hazelcast.md).
+- **Reducer:** transforma todos los valores emitidos para una clave en un valor final; Hazelcast crea uno por clave mediante una factory. [HZ-T02, p. 12] [HZ-T02, p. 15]
+- **Sort/shuffle:** etapa provista por el framework que agrupa por clave los valores emitidos y los envía al reducer correspondiente. [HZ-T02, p. 11]
+
+## APIs alternativas
+
+- **Batch loader:** mecanismo de GraphQL que agrupa los pedidos a un campo y los resuelve en un único llamado con N elementos. [API-T02, p. 21]
+- **GraphQL:** lenguaje de consulta y manipulación de datos para APIs, con esquema tipado, en el que el cliente elige los campos de la respuesta. [API-T02, p. 4] [API-T02, p. 5]
+- **HATEOAS:** hipermedia como motor del estado de la aplicación; las respuestas incluyen links para recorrer el servicio. [API-T01, p. 50] [API-T01, p. 57]
+- **N+1 queries:** problema de hacer una consulta adicional por cada elemento de un listado. [API-T02, p. 20]
+- **Resolver:** elemento que responde una query, mutación, subscripción o campo de GraphQL. [API-T02, p. 13]
+- **REST:** estilo arquitectónico de Fielding; en uso corriente, una interfaz basada en recursos sobre HTTP. [API-T01, p. 43] [API-T01, p. 44]
+- **Server-Sent Events:** conexión permanente unidireccional por la que el servidor envía actualizaciones al cliente. [API-T02, p. 32]
+- **SOAP:** protocolo estándar de intercambio de mensajes XML con `Envelope`, `Header`, `Body` y `Fault`. [API-T01, p. 18] [API-T01, p. 21]
+- **Webhook:** callback HTTP que un sistema dispara hacia una URL configurada cuando ocurre un evento. [API-T02, p. 30]
+- **WebSocket:** conexión permanente y *full duplex* entre cliente y servidor. [API-T02, p. 31]
+- **WSDL:** contrato XML de un servicio SOAP: tipos, mensajes, `portType`, `binding` y `service`. [API-T01, p. 26] [API-T01, p. 27]
+- **XSD:** esquema XML que define los campos, tipos y restricciones de los mensajes. [API-T01, p. 29]
