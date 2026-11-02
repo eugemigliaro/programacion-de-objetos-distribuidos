@@ -8,7 +8,7 @@
 - Se pueden volver a descargar desde los enlaces de la cátedra que figuran en la consigna (`material/catedra/practica/TPE2 Servicios de Trenes.md`, sección "Descripción Funcional").
 - La consigna prohíbe incluir los CSV de la cátedra en la entrega, así que tampoco tienen que terminar en el repositorio del TP.
 
-Los CSV de estaciones sí se versionan, porque son chicos, en `material/catedra/practica/`: `stationsCH.csv` (`HZ-D03`) y `stationsBE(in).csv` (`HZ-D02`).
+Los CSV de estaciones sí se versionan, porque son chicos, en `material/catedra/practica/`: `stationsCH.csv` (`HZ-D01`) y `stationsBE.csv` (`HZ-D02`).
 
 ## Archivos esperados
 
@@ -34,14 +34,7 @@ sha256sum trainsBE.csv.zip trainsCH.csv.zip
 cd laboratorio/tpe2/data
 unzip -o trainsBE.csv.zip trainsBE.csv
 unzip -o trainsCH.csv.zip trainsCH.csv
-cp "../../../material/catedra/practica/stationsBE(in).csv" stationsBE.csv
-cp ../../../material/catedra/practica/stationsCH.csv stationsCH.csv
+cp ../../../material/catedra/practica/stationsBE.csv ../../../material/catedra/practica/stationsCH.csv .
 ```
 
 Después, cada query se corre con `-DinPath="$PWD"` (o con la ruta absoluta de este directorio).
-
-## Estaciones: no pasar por una planilla
-
-`stationsCH(in).csv` (`HZ-D01`) llegó, probablemente después de pasar por una planilla, con las coordenadas dañadas: perdieron el punto decimal y ganaron separadores de miles (`4.737.817.667.422` en lugar de `47.37817667422`). No hay que usarlo. `stationsCH.csv` (`HZ-D03`) es la misma tabla descargada directamente con la opción "Descargar" de SharePoint, y tiene las coordenadas correctas.
-
-`stationsBE(in).csv` llegó por el mismo camino, pero sus coordenadas están intactas porque `Geo Point` es texto. Si se vuelve a descargar directamente, conviene compararla con la versionada. El seguimiento está en `wiki/dudas-y-conflictos.md`.

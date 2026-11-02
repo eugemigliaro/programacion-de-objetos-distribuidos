@@ -55,9 +55,8 @@ Este es el índice del conocimiento canónico compilado de Programación de Obje
 | `HZ-R02` | Referencias | Repositorio `word-count` | Template de MapReduce I, sin descargar. |
 | `HZ-R03` | Referencias | Repositorio `bike-rentals` | Template de MapReduce II, sin descargar. |
 | `HZ-E01` | Entrega | TPE2: servicios de trenes | Consigna evaluada en Markdown, con seis queries MapReduce sobre Hazelcast; sin páginas. |
-| `HZ-D01` | Dataset | `stationsCH(in).csv` | 1539 estaciones de Suiza; copia con las coordenadas dañadas por la descarga, reemplazada por `HZ-D03`. |
-| `HZ-D02` | Dataset | `stationsBE(in).csv` | 538 estaciones de Bélgica. |
-| `HZ-D03` | Dataset | `stationsCH.csv` | 1539 estaciones de Suiza, descarga directa con coordenadas correctas; es la copia a usar. |
+| `HZ-D01` | Dataset | `stationsCH.csv` | 1539 estaciones de Suiza. |
+| `HZ-D02` | Dataset | `stationsBE.csv` | 538 estaciones de Bélgica. |
 | `HZ-R04` | Referencias | Repositorio `tpe2-26Q2-g0` | Enlace al template del TPE2, sin descargar. |
 | `API-T01` | Teoría | APIs alternativas 1 | Tira de bytes, SOAP y REST sobre un servicio común, 63 páginas. |
 | `API-T02` | Teoría | APIs alternativas 2 | GraphQL y APIs de eventos, 35 páginas. |
