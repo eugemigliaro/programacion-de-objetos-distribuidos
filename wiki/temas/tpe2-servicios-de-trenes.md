@@ -200,7 +200,7 @@ El informe tiene tres secciones: [HZ-E01]
 
 ## Entrega y aprobación
 
-El repositorio se crea desde el *template repository* indicado en Campus (con *Use this template*), debe ser privado y su historia tiene que mostrar la evolución grupal e individual. Una entrega con un único commit que contenga todo el código no se acepta. [HZ-E01] El template provisto es `POD-ITBA/tpe2-26Q2-g0`; el enlace se preservó, pero el repositorio no se descargó. [HZ-R04]
+El repositorio se crea desde el *template repository* indicado en Campus (con *Use this template*), debe ser privado y su historia tiene que mostrar la evolución grupal e individual. Una entrega con un único commit que contenga todo el código no se acepta. [HZ-E01] El template provisto es `POD-ITBA/tpe2-26Q2-g0`; el enlace se preservó, pero el repositorio no se incorporó como material. [HZ-R04] El repositorio del grupo se creó desde ese template: el estado, el reparto y las decisiones están en `entregas/README.md`.
 
 Al Campus se sube un único archivo comprimido con: [HZ-E01]
 

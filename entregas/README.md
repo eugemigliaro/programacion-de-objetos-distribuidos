@@ -10,6 +10,86 @@ Las entregas que tienen su propio repositorio git se clonan acá y quedan
 ignoradas por este repositorio (ver `.gitignore`). Se entregan por separado, así
 que **su contenido no debe citar ni referenciar material de este repositorio**.
 
+## TPE2 — Servicios de Trenes
+
+- **Repositorio:** `eugemigliaro/tpe2-26Q2-g05` (privado, creado el 03/11 desde
+  el template de la cátedra `POD-ITBA/tpe2-26Q2-g0`). Invitados con escritura:
+  `andresgarbarz`, `FrancoBrandaa` y `Pablo-Goros`.
+- **Integrantes:** Eugenio Migliaro, Andrés Garbarz, Franco Branda, Pablo
+  Gorostiaga
+- **Entrega:** jueves 12/11 23:59 · **Coloquio:** miércoles 18/11
+- **Alcance:** somos cuatro, así que entran las queries 1 a 5. La 6 es sólo para
+  grupos de cinco.
+
+### Cómo replicar el entorno
+
+```shell
+cd programacion-de-objetos-distribuidos/entregas
+git clone git@github.com:eugemigliaro/tpe2-26Q2-g05.git
+```
+
+El template fija Java 25 y trae `mvnw`; Hazelcast 3.8.6 llega por Maven. Los
+datasets de servicios no se versionan: cómo bajarlos y armar el directorio de
+entrada está en `laboratorio/tpe2/README.md`.
+
+En los commits de este repo figura sólo el integrante que commitea: no se agregan
+líneas de coautoría de agentes.
+
+### Dónde está cada cosa
+
+| Qué | Dónde |
+|---|---|
+| Enunciado | `material/catedra/practica/TPE2 Servicios de Trenes.md` (texto en `material/extraido/HZ-E01.txt`) |
+| Resumen de la consigna | `wiki/temas/tpe2-servicios-de-trenes.md` |
+| Teoría de MapReduce y Hazelcast | `wiki/temas/mapreduce-con-hazelcast.md`, `wiki/temas/hazelcast-cluster-y-estructuras.md` |
+| Datos | `laboratorio/tpe2/` |
+| Decisiones de diseño del TP | `entregas/tpe2-26Q2-g05/doc/decisiones-de-diseno.md` |
+
+Antes de implementar una query, **leer su sección completa en la consigna**: los
+desempates y las salidas de ejemplo son contrato. Las filas de ejemplo con los
+datos completos sirven para validar.
+
+### Decisiones tomadas el 03/11
+
+El detalle y las mediciones que las respaldan están en el documento de
+decisiones del TP. En resumen:
+
+- Identificador **`g05`** en los pom, el cluster y las colecciones.
+- Los servicios se suben en **lotes de filas por entrada** del `IMap`. Con un
+  tamaño de lote 1 se reproduce la versión sin optimizar, y esa comparación es la
+  optimización particular del informe.
+- Cada query sube **sólo sus campos**. Al cargar se filtra por estación
+  (desconocidas, áreas de la Q3, rectángulo de la Q4). Las condiciones por fila y
+  la agregación quedan en el job.
+- En el cluster, una estación viaja como su **posición alfabética**: comparar
+  enteros equivale a comparar nombres.
+- **Q4:** el top n por cuadrante se resuelve en el collator.
+- **Q5:** un solo job con clave fecha operativa; el reducer devuelve sólo al
+  ganador.
+- **Informe:** el análisis de combiner se hace con la Q1.
+
+### Estado
+
+Al 03/11: el repositorio está creado y clonado, `g05` ya está aplicado sobre el
+template y las decisiones de diseño están registradas. Falta construir la base
+común.
+
+### Reparto
+
+Definido el 03/11. Cada rol toma su parte de la base común y después sus queries
+de punta a punta: mapper, reducer, combiner, collator, script y tests.
+
+| Rol | Responsable | Base | Queries | Informe |
+|---|---|---|---|---|
+| A: datos | Eugenio | parsers CH/BE, catálogo de estaciones, subida en lotes | Q1 (referencia) y Q4 | combiner |
+| B: infraestructura | Andrés | red del nodo, conexión del cliente, scripts, parámetros, `timeX.txt`, CSV | Q2 | tiempos por nodos, README |
+| C: validación | Franco | fixtures y salidas esperadas de las cinco queries | Q3 | — |
+| D: Q5 | Pablo | prototipo del reducer por fecha | Q5 | optimización particular |
+
+Antes de separarse hay que acordar la interfaz común: el modelo de fila parseada,
+la proyección que define cada query y cómo se registra una query. Eso es lo que
+permite que C y D arranquen sin esperar a que esté la base.
+
 ## TPE1 — Gestión de Equipajes en Aeropuertos
 
 - **Repositorio:** `eugemigliaro/tpe1-26Q2-g05` (privado, creado desde el
