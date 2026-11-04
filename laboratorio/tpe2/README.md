@@ -38,3 +38,18 @@ cp ../../../material/catedra/practica/stationsBE.csv ../../../material/catedra/p
 ```
 
 Después, cada query se corre con `-DinPath="$PWD"` (o con la ruta absoluta de este directorio).
+
+## Oráculos
+
+`oraculo/` guarda cálculos de referencia hechos sin Hazelcast, para comparar la
+salida del TP con los datos completos. Hacen falta porque los números de los
+ejemplos de la consigna no salen de estos datasets (ver
+`wiki/dudas-y-conflictos.md`).
+
+```shell
+oraculo/query1.sh CH data > /tmp/esperado.csv
+cmp /tmp/esperado.csv <(tail -n +2 /ruta/de/salida/query1.csv)
+```
+
+El script de la query 1 coincide byte a byte con la salida del TP para los dos
+países. Los de las demás queries están pendientes.

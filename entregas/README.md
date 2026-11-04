@@ -46,8 +46,10 @@ líneas de coautoría de agentes.
 | Decisiones de diseño del TP | `entregas/tpe2-26Q2-g05/doc/decisiones-de-diseno.md` |
 
 Antes de implementar una query, **leer su sección completa en la consigna**: los
-desempates y las salidas de ejemplo son contrato. Las filas de ejemplo con los
-datos completos sirven para validar.
+desempates y el formato de las salidas de ejemplo son contrato. Los números de esos
+ejemplos, en cambio, **no** salen de los datasets completos (ver
+`wiki/dudas-y-conflictos.md`). Para validar con los datos completos hay que
+compararse contra un cálculo independiente, como `laboratorio/tpe2/oraculo/`.
 
 ### Decisiones tomadas el 03/11
 
@@ -71,8 +73,18 @@ decisiones del TP. En resumen:
 ### Estado
 
 Al 03/11: el repositorio está creado y clonado, `g05` ya está aplicado sobre el
-template y las decisiones de diseño están registradas. Falta construir la base
-común.
+template y las decisiones de diseño están registradas.
+
+Al 04/11 la base común está en `main`: el contrato de las queries, la carga en
+lotes, los formatos de los dos países, versiones mínimas de las piezas de
+infraestructura y la query 1 completa como referencia. La query 1 coincide fila por
+fila con el oráculo sobre los dos datasets completos. La estructura, la receta
+para agregar una query y los tiempos medidos están en el documento de decisiones
+del TP.
+
+Pendiente del rol B: la red del nodo para varias máquinas, los scripts
+`query1.sh` a `query5.sh`, borrar `Client.java` y `run-client.sh` del template y
+que `Server` use `ClusterNames`.
 
 ### Reparto
 
