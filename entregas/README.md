@@ -82,9 +82,18 @@ fila con el oráculo sobre los dos datasets completos. La estructura, la receta
 para agregar una query y los tiempos medidos están en el documento de decisiones
 del TP.
 
-Pendiente del rol B: la red del nodo para varias máquinas, los scripts
-`query1.sh` a `query5.sh`, borrar `Client.java` y `run-client.sh` del template y
-que `Server` use `ClusterNames`.
+Al 09/11 están las cinco queries: la Q2 de Andrés, la Q3 de Franco y la Q5 de
+Pablo están en `main`, y la Q4 y los scripts `query1.sh` y `query4.sh` completan el
+rol A. La Q1 y la Q4 coinciden con `laboratorio/tpe2/oraculo/` sobre los datasets
+completos.
+
+Pendiente del rol B: la red del nodo para varias máquinas, borrar `Client.java` y
+`run-client.sh` del template y que `Server` use `ClusterNames`.
+
+Pendiente de la Q5: correrla sobre los datasets completos. El 09/11 se sacaron de
+su sección del documento de decisiones las citas a `[HZ-E01]` y a la wiki, que la
+entrega no puede llevar; el hueco de paradas indistinguibles que mencionaba quedó
+registrado en `wiki/dudas-y-conflictos.md`.
 
 ### Reparto
 

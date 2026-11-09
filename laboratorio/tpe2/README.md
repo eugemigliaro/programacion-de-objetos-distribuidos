@@ -51,5 +51,17 @@ oraculo/query1.sh CH data > /tmp/esperado.csv
 cmp /tmp/esperado.csv <(tail -n +2 /ruta/de/salida/query1.csv)
 ```
 
-El script de la query 1 coincide byte a byte con la salida del TP para los dos
-países. Los de las demás queries están pendientes.
+```shell
+oraculo/query4.sh CH data 3 0.1 46.0 48.0 6.0 9.0 > /tmp/esperado.csv
+cmp /tmp/esperado.csv <(tail -n +2 /ruta/de/salida/query4.csv)
+```
+
+| Script | Qué calcula | Verificado contra el TP |
+|---|---|---|
+| `query1.sh` | `awk` y `sort -k` sobre el nombre | los dos países, byte a byte |
+| `query4.sh` | `awk` agrega por estación; Python arma cuadrantes y ranking con `Fraction` | Suiza y Bélgica con los parámetros del ejemplo, y Bélgica con `n=2 q=0.25` |
+
+Los parámetros de `query4.sh` van en el orden `n q latMin latMax lonMin lonMax`,
+sin el `-D`. Las queries 2 y 3 se verificaron con recuentos que cada responsable
+hizo por su cuenta y que no están en este directorio. Según el documento de
+decisiones del TP, la query 5 todavía no se corrió sobre los datasets completos.
