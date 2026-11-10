@@ -63,9 +63,12 @@ cmp /tmp/esperado.csv <(tail -n +2 /ruta/de/salida/query4.csv)
 
 Los parámetros de `query4.sh` van en el orden `n q latMin latMax lonMin lonMax`,
 sin el `-D`. Las queries 2 y 3 se verificaron con recuentos que cada responsable
-hizo por su cuenta y que no están en este directorio. El 10/11/2026 se volvió a
-correr el build con `backup-count` 0 y los códigos enteros de la query 2, en dos
-nodos de `-Xmx4g`. Las queries 1 y 4 coincidieron otra vez byte a byte con estos
-oráculos. La query 2 coincidió byte a byte con la salida del 08/11. La query 5
-escribió 366 filas en Bélgica y 365 en Suiza, una por fecha operativa. Los
-tiempos quedaron en `doc/decisiones-de-diseno.md` del repositorio de la entrega.
+hizo por su cuenta y que no están en este directorio. El 10/11/2026 hubo dos
+corridas en dos nodos de `-Xmx4g` y `backup-count` 0. La primera usaba los
+códigos enteros de la query 2. La segunda, más tarde el mismo día, agregó el
+parseo de fechas sobre la línea, el filtro de filas que las queries 2 y 3 ya
+descartaban, la celda suelta de la query 3 y el `putAll` solapado con la lectura.
+En las dos, las queries 1 y 4 coincidieron byte a byte con estos oráculos, la
+query 2 coincidió byte a byte con la salida del 08/11 y la query 5 escribió 366
+filas en Bélgica y 365 en Suiza, una por fecha operativa. Los tiempos de cada
+corrida quedaron en `doc/decisiones-de-diseno.md` del repositorio de la entrega.
