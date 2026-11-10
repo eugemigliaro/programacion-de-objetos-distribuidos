@@ -63,5 +63,9 @@ cmp /tmp/esperado.csv <(tail -n +2 /ruta/de/salida/query4.csv)
 
 Los parámetros de `query4.sh` van en el orden `n q latMin latMax lonMin lonMax`,
 sin el `-D`. Las queries 2 y 3 se verificaron con recuentos que cada responsable
-hizo por su cuenta y que no están en este directorio. Según el documento de
-decisiones del TP, la query 5 todavía no se corrió sobre los datasets completos.
+hizo por su cuenta y que no están en este directorio. El 10/11/2026 se volvió a
+correr el build con `backup-count` 0 y los códigos enteros de la query 2, en dos
+nodos de `-Xmx4g`. Las queries 1 y 4 coincidieron otra vez byte a byte con estos
+oráculos. La query 2 coincidió byte a byte con la salida del 08/11. La query 5
+escribió 366 filas en Bélgica y 365 en Suiza, una por fecha operativa. Los
+tiempos quedaron en `doc/decisiones-de-diseno.md` del repositorio de la entrega.
