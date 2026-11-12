@@ -60,9 +60,10 @@ decisiones del TP. En resumen:
 - Los servicios se suben en **lotes de filas por entrada** del `IMap`. Con un
   tamaño de lote 1 se reproduce la versión sin optimizar, y esa comparación es la
   optimización particular del informe.
-- Cada query sube **sólo sus campos**. Al cargar se filtra por estación
-  (desconocidas, áreas de la Q3, rectángulo de la Q4). Las condiciones por fila y
-  la agregación quedan en el job.
+- Cada query sube **sólo sus campos, pero todas las filas**. Desde el 12/11 el
+  filtrado (estaciones desconocidas, áreas de la Q3, rectángulo de la Q4 y las
+  condiciones por fila) lo hace el mapper, por indicación del profesor del 11/11.
+  Hasta entonces se filtraba al leer.
 - En el cluster, una estación viaja como su **posición alfabética**: comparar
   enteros equivale a comparar nombres.
 - **Q4:** el top n por cuadrante se resuelve en el collator.

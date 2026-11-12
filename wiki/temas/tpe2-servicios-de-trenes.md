@@ -168,13 +168,20 @@ Fuente: [HZ-E01].
 
 La consigna no fija una versión de Java. Sus recomendaciones enlazan a la documentación de Java SE 25: `System.getProperty` para los parámetros, `Files.lines` y `Files.write` para leer y escribir, `DecimalFormat` con `RoundingMode.DOWN` para truncar, `DateTimeFormatter` para las fechas y `LocalDate#getDayOfWeek` para el día de la semana. [HZ-E01]
 
+## Indicaciones del profesor
+
+> **Comunicadas por el usuario sobre la clase del 11/11/2026; no hay una fuente catalogada.**
+
+- El filtrado se hace en el mapper o en un `KeyPredicate`, no al leer los archivos en el cliente. La indicación no menciona la proyección de campos; el TP sigue subiendo sólo los campos de cada query, porque elegir columnas no descarta filas (**inferencia**).
+- Hay que borrar el cliente de ejemplo que trae el template (`Client.java` y `run-client.sh`).
+
 ## Relación con la teoría
 
 > **Inferencias de diseño, no requisitos de la consigna.**
 
 - Las queries 1, 4 y 6 son sumas y conteos por clave, así que son candidatas naturales a un combiner, y el informe pide justamente medir una query con y sin combiner. El combiner reduce el tráfico hacia los reducers acumulando en el nodo del mapper. [HZ-T03, p. 8] [HZ-T03, p. 9]
 - Todos los órdenes y desempates son globales, y el modelo no ordena globalmente: se resuelven con un collator o con post-procesamiento en el cliente. [HZ-T02, p. 24] [HZ-T03, p. 15]
-- Las estaciones son pocas frente a los servicios. Se pueden filtrar y enriquecer al cargar, pasarle el mapa de estaciones al collator por constructor o consultarlo desde el job con `HazelcastInstanceAware`, sabiendo que emitir ids en lugar de nombres ahorra tráfico pero puede generar búsquedas en particiones remotas. [HZ-T03, p. 31] [HZ-T03, p. 34]
+- Las estaciones son pocas frente a los servicios. Se puede pasarle el mapa de estaciones al collator o al mapper por constructor, o consultarlo desde el job con `HazelcastInstanceAware`, sabiendo que emitir ids en lugar de nombres ahorra tráfico pero puede generar búsquedas en particiones remotas. [HZ-T03, p. 31] [HZ-T03, p. 34] Filtrar al leer los archivos no está permitido (ver la sección siguiente).
 - La query 5 necesita reunir todas las paradas de (fecha, tren, operador) para ordenarlas antes de calcular el efecto; quedarse con el máximo por fecha es un segundo paso, ya sea otro job o el collator.
 - Toda clase usada como clave de emisión necesita `DataSerializable`, un constructor sin parámetros, `equals` y `hashCode`. [HZ-T03, p. 27] [HZ-T03, p. 28] Además, todos los nodos necesitan las clases del job en el CLASSPATH. [HZ-T02, p. 21]
 
