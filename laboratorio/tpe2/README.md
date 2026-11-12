@@ -60,6 +60,7 @@ cmp /tmp/esperado.csv <(tail -n +2 /ruta/de/salida/query4.csv)
 |---|---|---|
 | `query1.sh` | `awk` y `sort -k` sobre el nombre | los dos países, byte a byte |
 | `query4.sh` | `awk` agrega por estación; Python arma cuadrantes y ranking con `Fraction` | Suiza y Bélgica con los parámetros del ejemplo, y Bélgica con `n=2 q=0.25` |
+| `query5.sh` | `sort` ordena las paradas de cada recorrido y `awk` suma las diferencias consecutivas, al pie de la letra del enunciado | Suiza y Bélgica con `minServices=3`, byte a byte, el 12/11 |
 
 Los parámetros de `query4.sh` van en el orden `n q latMin latMax lonMin lonMax`,
 sin el `-D`. Las queries 2 y 3 se verificaron con recuentos que cada responsable
@@ -72,3 +73,7 @@ En las dos, las queries 1 y 4 coincidieron byte a byte con estos oráculos, la
 query 2 coincidió byte a byte con la salida del 08/11 y la query 5 escribió 366
 filas en Bélgica y 365 en Suiza, una por fecha operativa. Los tiempos de cada
 corrida quedaron en `doc/decisiones-de-diseno.md` del repositorio de la entrega.
+
+`query5.sh` recibe `minServices` como tercer parámetro y necesita espacio
+temporal para ordenar (usa `TMPDIR`). El 12/11/2026, con el filtrado ya en el
+mapper, la query 5 coincidió byte a byte con este oráculo en los dos países.
